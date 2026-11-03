@@ -2,6 +2,13 @@
 
 Girdi: form.html'den gelen brief. Kullanıcı genellikle `materyaller/<video>/brief.md` dosyasını işaret eder: önce onu oku, içindeki talimatları ve brief'i uygula. Form dosyaları (video ve materyaller) aynı klasöre zaten yerleştirmiş olur. Brief'te video, oran, yüz kamerası, palet, tasarım stili, efektler, ses, müzik ve materyal listesi bulunur. Brief'te yazan her şeyi uygula. Yazmayan konuda makul varsayım yap ve raporda söyle.
 
+## Üç kural (her şeyden önemli)
+1. **Boş ekran yasak.** Çıktının hiçbir yerinde 3 saniyeden uzun değişmeyen görüntü ve kullanılmayan siyah alan olmaz. Ekran durağansa kadraj hareketi, vurgu ya da görsel eklenir.
+2. **Dikeyde ekranı sığdırma, kırp ve takip et.** Yatay ekran kaydını 9:16'ya sığdırıp altını boş bırakmak hatadır. Aşağıdaki "5D. Dikey çıktı" adımını uygula.
+3. **Kapılar geçilmeden teslim yok.** `scripts/kontrol.mjs` hata verirse düzelt ve tekrar çalıştır. Kapıyı atlayamazsın.
+
+Hazır betikler var, ffmpeg filtresi veya yerleşim hesabını kendin yazma: `scripts/analiz.mjs`, `scripts/kontrol.mjs`, Remotion'daki `Overlay` ve `Dikey` sahneleri. Model küçükse önce `talimat/adim-adim.md` dosyasını oku.
+
 ## Hazırlık
 - Çalışma klasörü bu repo. Video: `materyaller/<video>/video/`. Materyaller: `materyaller/<video>/materyal/`.
 - `node_modules` yoksa `npm install` çalıştır. `ffmpeg` ve `ffprobe` PATH'te olmalı.
@@ -29,6 +36,15 @@ Süre değişeceği için analiz, katman ve zamanlar hızlandırılmış videoya
 - Yüz görünmeyecek zamanlarda: kamera ekrandan ayrı bir kaynaksa çıkar. Gömülüyse kamera alanını tam ekran bir sahneyle veya edit görselleriyle ört. Alanı örtmek için `overlay` ile ekran içeriğinin o bölgesini ölçekleyip bindirmek de çalışır. Geçişler kısa olsun, yüz aniden kaybolmasın.
 - Bu zamanları `out/plan.md` içine yaz ve katmandaki tam ekran sahneleri (`card`, `shot`, `search`) bu aralıklara yerleştir.
 
+### 2b. Analiz betiği
+Hızı uyguladıktan sonra (adım 0) şunları çalıştır:
+```
+node scripts/analiz.mjs VIDEO                       # bilgi + out/kareler/sheet.png
+node scripts/analiz.mjs VIDEO --kamera x,y,w,h      # + durağan ekran aralıkları (kamera yoksa 0,0,0,0)
+```
+Önce `sheet.png` karesine bakıp kamera kutusunu yüzde olarak belirle, sonra ikinci komutu çalıştır. Çıkan `out/analiz.json` içinde `oran`, `donuk` (ekranın değişmediği aralıklar) ve `donukOran` vardır. `donukOran` 0.25'ten büyükse planın ana işi durağan aralıkları canlandırmaktır.
+Transkript brif'te verildiyse (materyal/transkript/) onu kullan, Whisper çalıştırma.
+
 ### 3. Yaratıcı plan
 - Planlamadan önce kısa bir araştırma yap: brief'teki konuya benzer videolarda hangi görsel yaklaşımlar kullanılıyor.
 - Her işaretlenen an için ne gösterileceğine karar ver. Yazı tek başına yetmesin: marka için logo, haber için ekran görüntüsü, arama için arama sahnesi, rakam için sayaç.
@@ -42,7 +58,9 @@ Süre değişeceği için analiz, katman ve zamanlar hızlandırılmış videoya
 - "Sen bul" yazanlar için kısa süre dene. Bulması uzun sürüyorsa atla, kullanıcıya sorma.
 - Ekrandaki yabancı metinleri Türkçe çeviri kartıyla göster.
 
-### 5. Katman
+### 5. Katman (yatay çıktı)
+Çıktı **dikey** ve kaynak **yatay** ise bu adımı ve adım 6'yı atla, 5D'ye geç. Durağan ekran varsa (`donuk`), o aralıklarda da `detay`, `frame`, `marker`, `spotlight` gibi efektler ekle ve kamera alanı dışında bir yakınlaştırma kullan.
+
 `katman.json` dosyası yaz. Şema:
 
 ```json
@@ -103,7 +121,31 @@ npx remotion render src/index.ts Overlay out/katman.webm --props=katman.json --c
 ```
 Çok uzun videolarda katmanı bölümlere ayırıp ayrı ayrı render etmek süreyi kısaltır. Olmayan zamanlar boş kalsın.
 
-### 6. Birleştirme
+### 5D. Dikey çıktı (yatay kaynak, 9:16)
+`Dikey` sahnesi ekranı kırpıp takip eder, yüzü altta kaynak oranında gösterir, efektleri ekran penceresine göre çizer ve tek geçişte 1080x1920 video üretir.
+
+1. Hızı uygulanmış videoyu `public/m/taban.mp4` olarak kopyala (hız yoksa orijinali kopyala).
+2. `dikey.json` yaz (örnek: `dikey.ornek.json`). Alanlar:
+   - `video`: `taban.mp4`, `srcW`/`srcH`: kaynağın çözünürlüğü, `fps`, `duration` (hızlanmış süre), `hiz`: uygulanan hız.
+   - `face`: kamera kutusu (yüzde). Kamera yoksa alanı sil ve `faceShow` boş olsun.
+   - `faceShow`: yüzün göründüğü aralıklar. "Giriş ve CTA" ise `[[0, kancaSonu], [duration-15, duration]]`. Boş liste: yüz hiç görünmez, pencere tüm yüksekliği kullanır.
+   - `kadraj`: `{t, cx, cy, w}` noktaları. t anında ekranın (cx, cy) merkezi (kaynağın yüzdesi) ve w genişliği (yüzde) görünür. Bir önceki kadrajı tutar, sonraki noktaya 0.7 sn kala geçişe başlar ve tam t'de varır.
+   - `events`: efektler. `"ref": "ekran"` yazarsan x, y, w, h ve `pos` ekran penceresine göredir (varsayılan bu olsun). Ref yoksa tuvale göredir (sadece `chapter`, `progress`, `subscribe` gibi genel öğeler için).
+3. Kadraj kuralları:
+   - Başlangıç genel plandır (w=100) ve en fazla 4 sn sürer. Sonrasında okunacak bölgeye yaklaş: metin için w 40-55, geniş arayüz için w 60-70. Telefonda okunmayan küçük yazı kabul edilmez.
+   - Kadraj noktasını konuşulan şeyin ekrandaki yerine koy (konuşma ne zaman o bölgeye geliyorsa o saniyede). Durağan aralıklarda en geç 4 sn'de bir kadraj değişimi ya da efekt olsun.
+   - Yüz gizliyken kadraj kamera kutusuna girmesin (betik bunu denetler).
+   - Konumsal efektler (`frame`, `marker`, `spotlight`, `arrow`, `cursor`) çalışırken kadraj sabit kalsın. Konumu mevcut kadrajdaki pencereye göre hesapla.
+   - Kadraj hareketleri brif'teki "yakınlaştırma sayısına" dahil değildir (yerleşim aracıdır). Sayılan: konuşulan detaya özel "bütünden parçaya" vurguları.
+4. Plan kapısı (render öncesi, hata varsa düzelt): `node scripts/kontrol.mjs plan dikey.json`
+5. Render (sessiz) ve ses ekleme:
+```
+npx remotion render src/index.ts Dikey out/dikey-sessiz.mp4 --props=dikey.json --codec=h264 --muted
+ffmpeg -y -i out/dikey-sessiz.mp4 -i out/hizli.mp4 -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -shortest out/<video>-edit.mp4
+```
+(`out/hizli.mp4` yoksa orijinal videoyu ver.) Müzik varsa adım 7'yi uygula.
+
+### 6. Birleştirme (yatay çıktı)
 Önemli: şeffaflığın okunması için katman girdisinden önce `-c:v libvpx` yaz.
 
 ```
@@ -127,11 +169,16 @@ ffmpeg -y -i out/<video>-edit.mp4 -i MUZIK -filter_complex \
 Müzik dosyası yoksa atla ve raporda söyle.
 
 ### 8. Kontrol
-Çıktıdan farklı zamanlarda kare al ve incele:
+Önce ölçüm kapısı (başarısızsa düzelt, tekrar render et):
+```
+node scripts/kontrol.mjs cikti out/<video>-edit.mp4 --sure <beklenen_sn>
+```
+Betik süreyi, sesi, boş siyah alan oranını (dikeyde en fazla %40) ve 3 sn'den uzun değişmeyen görüntüyü denetler. Sonra çıktıdan farklı zamanlarda kare al ve gözle incele:
 - Efektler konuşmayla aynı anda mı?
 - Yüz kamerası ikilenmiş veya kapanmış mı?
 - Kişisel bilgiler bulanık mı?
-- Yazılar okunuyor mu, kamera alanıyla çakışan bir şey var mı?
+- Yazılar telefonda okunuyor mu, kamera alanıyla çakışan bir şey var mı?
+- Vurgu rengi sadece gerçek uyarı ve tehlike anlarında mı?
 - Süre ve ses orijinaliyle aynı mı (`ffprobe` ile karşılaştır)?
 Sorun bulursan düzelt ve yeniden render et.
 

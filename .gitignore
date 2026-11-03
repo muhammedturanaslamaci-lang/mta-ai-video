@@ -1,5 +1,16 @@
 node_modules/
 out/
 public/m/
+
+# kisisel / makineye ozel
+araclar/
+path-yedek.txt
+dikey.json
+katman.json
+*.log
+
+# kullanici materyalleri (ornek video-1 haric)
+materyaller/*
+!materyaller/video-1
 materyaller/*/video/*
 !materyaller/*/video/.gitkeep

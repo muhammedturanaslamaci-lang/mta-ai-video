@@ -8,7 +8,8 @@ export type Theme = {
   style: StyleName;
 };
 
-type Base = {start: number; dur: number}; // saniye
+// ref: 'ekran' ise yüzde koordinatları ve konumlar tuvale değil ekran penceresine göredir (sadece Dikey).
+type Base = {start: number; dur: number; ref?: 'ekran'}; // saniye
 
 export type Ev =
   | (Base & {type: 'logo'; file: string; label?: string; pos?: Pos})
@@ -43,4 +44,18 @@ export type Props = {
   events: Ev[];
   // yüz kamerasının bulunduğu alan (yüzde). Bu alana hiçbir şey çizilmez.
   camera?: {x: number; y: number; w: number; h: number};
+};
+
+// ---- Dikey (9:16) sahne: yatay ekran kaydını kırpıp takip eder, yüzü altta gösterir ----
+// Kadraj noktası: t anında ekranın (cx, cy) merkezi ve w genişliği (kaynağın yüzdesi) görünür olmalı.
+export type Kadraj = {t: number; cx: number; cy: number; w: number};
+
+export type DikeyProps = Props & {
+  video: string;                       // public/m/ altındaki dosya adı (hız uygulanmış, ses önemsiz)
+  srcW: number;
+  srcH: number;
+  face?: {x: number; y: number; w: number; h: number}; // kaynaktaki yüz kamerası kutusu (yüzde)
+  faceShow: [number, number][];        // yüzün göründüğü aralıklar (sn). Boşsa yüz hiç görünmez.
+  kadraj: Kadraj[];                    // en az 1 nokta, t'ye göre sıralı
+  bg?: string;                         // arka plan rengi
 };

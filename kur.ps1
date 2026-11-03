@@ -16,14 +16,11 @@ function PythonOk {
   } catch { return $false }
 }
 
+# Bilgisayarin kalici PATH ayarina DOKUNMAZ. Sadece bu pencerede gecerli olur.
+# Sonraki pencerelerde araclar terminal.bat / baslat.bat icindeki ortam.bat ile taninir.
 function AddPath($p) {
   if (-not (Test-Path $p)) { return }
   if (($env:Path -split ';') -notcontains $p) { $env:Path = $p + ';' + $env:Path }
-  $u = [Environment]::GetEnvironmentVariable('Path', 'User')
-  if (-not $u) { $u = '' }
-  if (($u -split ';') -notcontains $p) {
-    [Environment]::SetEnvironmentVariable('Path', ($p + ';' + $u), 'User')
-  }
 }
 
 function Download($url, $out) {
@@ -66,7 +63,7 @@ try {
     try {
       $inst = Join-Path $tools 'python-kurulum.exe'
       Download 'https://www.python.org/ftp/python/3.12.8/python-3.12.8-amd64.exe' $inst
-      Start-Process -FilePath $inst -ArgumentList '/quiet', 'InstallAllUsers=0', 'PrependPath=1', 'Include_test=0', 'Include_launcher=0' -Wait
+      Start-Process -FilePath $inst -ArgumentList '/quiet', 'InstallAllUsers=0', 'PrependPath=0', 'Include_test=0', 'Include_launcher=0' -Wait
       Remove-Item $inst -Force
       $py = Join-Path $env:LOCALAPPDATA 'Programs\Python\Python312'
       AddPath $py
@@ -100,14 +97,14 @@ try {
     if ($LASTEXITCODE -ne 0) { Write-Host 'faster-whisper kurulamadi. Edit yine calisir ama konusma yaziya dokulemeyebilir.' }
   }
 
+  Set-Content -Path (Join-Path $tools 'kurulum-tamam.txt') -Value ((Get-Date).ToString())
   Write-Host ''
-  Write-Host 'Hazir. Simdi sunlari yap:'
-  Write-Host '1. Bu klasorun adres cubuguna cmd yaz ve Enter tusuna bas.'
-  Write-Host '2. Acilan pencerede kullandigin araci yaz. Ornek: claude, codex, gemini. Ilk seferde giris yap.'
-  Write-Host '3. form.bat dosyasina cift tikla ve formu doldur.'
+  Write-Host 'Hazir. Kurulum tamam.'
+  Write-Host 'Simdi baslat.bat dosyasina cift tikla. Form acilir. Formu doldurup Baslat dugmesine basman yeter.'
+  Write-Host '(Bilgisayarinin PATH ayarina dokunulmadi. Kurulan Node.js ve ffmpeg proje icindeki araclar klasorundedir.)'
 }
 catch {
   Write-Host ''
   Write-Host ('HATA: ' + $_.Exception.Message)
-  Write-Host 'Internet baglantini kontrol edip kur.bat dosyasini tekrar calistir.'
+  Write-Host 'Internet baglantini kontrol edip baslat.bat dosyasini tekrar calistir.'
 }

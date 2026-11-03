@@ -212,10 +212,10 @@ footer { margin-top: 36px; color: var(--muted); font-size: 13px; max-width: 70ch
   <header>
     <div class="kicker">Edit akışı · brief formu</div>
     <h1>Videonu bir kez anlat, edit'i yapay zeka yapsın</h1>
-    <p>Soruları doldur, efektleri sağdaki ön izlemede dene. Dosyaların otomatik yerleşir, sen sadece tek satırlık komutu yapay zeka aracına yapıştırırsın.</p>
+    <p>Soruları doldur, efektleri sağdaki ön izlemede dene. Dosyaların otomatik yerleşir, sen sadece Başlat düğmesine basarsın.</p>
     <ol class="flow">
       <li><b>1</b>Formu doldur</li>
-      <li><b>2</b>Komutu yapıştır</li>
+      <li><b>2</b>Başlat</li>
     </ol>
   </header>
 
@@ -232,9 +232,10 @@ footer { margin-top: 36px; color: var(--muted); font-size: 13px; max-width: 70ch
           <label class="lab" for="vfile">Video dosyası</label>
           <input type="file" id="vfile" accept="video/*">
           <div class="fnames" id="vname"></div>
+          <div class="hint" id="vmeta">Videoyu seçince çözünürlük ve süre otomatik okunur.</div>
         </div>
         <div class="field">
-          <span class="lab">Görüntü oranı</span>
+          <span class="lab">Çıktı oranı</span>
           <div class="fmts">
             <label class="fmt"><input type="radio" name="fmt" value="9:16 (dikey)"><span class="shape v"></span><b>9:16</b><small>Dikey</small></label>
             <label class="fmt"><input type="radio" name="fmt" value="16:9 (yatay)" checked><span class="shape h"></span><b>16:9</b><small>Yatay</small></label>
@@ -260,6 +261,16 @@ footer { margin-top: 36px; color: var(--muted); font-size: 13px; max-width: 70ch
             <option value="Tüm videoyu 1.5x hızlandır">Tüm video 1.5x</option>
           </select>
           <span class="hint">Hız değişimi diğer işlerden önce yapılır, efektler yeni zamana göre yerleşir.</span>
+        </div>
+        <div class="field">
+          <label class="lab" for="topic">Videonun konusu</label>
+          <textarea id="topic" rows="2" maxlength="400" placeholder="Örnek: ChatGPT'de her gün kullanabileceğim 5 kısayol komutunu anlatıyorum. Rakam ve komut adları önemli."></textarea>
+          <span class="hint">1-2 cümle yeter. Yapay zeka neyin önemli olduğunu buradan anlar.</span>
+        </div>
+        <div class="field">
+          <label class="lab" for="tfile">Transkript veya altyazı (isteğe bağlı)</label>
+          <input type="file" id="tfile" accept=".srt,.vtt,.txt">
+          <span class="hint">Verirsen konuşma yazıya dökülmez, bu dosya kullanılır. Daha hızlı ve daha doğru olur.</span>
         </div>
         <div class="field">
           <span class="lab">Videonun durumu</span>
@@ -347,6 +358,15 @@ footer { margin-top: 36px; color: var(--muted); font-size: 13px; max-width: 70ch
           <span class="hint">Ekran uzun süre durağansa yoğunluğu artırabilirsin.</span>
         </div>
         <div class="field">
+          <label class="lab" for="still">Ekran uzun süre durağansa</label>
+          <select id="still">
+            <option value="Kadraj hareketi (kırpma ve kaydırma) ile canlandır ve gerekli yerlere efekt ekle">Kadraj hareketi ve efektle canlandır</option>
+            <option value="Sadece kadraj hareketi (kırpma ve kaydırma) kullan, ek efekt ekleme">Sadece kadraj hareketi</option>
+            <option value="Görsel, bilgi kartı ve materyal ağırlıklı canlandır">Görsel ve kart ağırlıklı</option>
+          </select>
+          <span class="hint">Hareketsiz bir ekranı 3 saniyeden fazla olduğu gibi bırakmayız. Yöntemi sen seç.</span>
+        </div>
+        <div class="field">
           <span class="lab">Giriş kancası</span>
           <div class="opts" role="radiogroup" aria-label="Giriş kancası">
             <label class="opt"><input type="radio" name="hook" value="ai" checked><span>Yapay zeka oluştursun<small>Konuşmadan en vurucu cümleyi bulur</small></span></label>
@@ -416,6 +436,14 @@ footer { margin-top: 36px; color: var(--muted); font-size: 13px; max-width: 70ch
       <fieldset class="sec">
         <legend><span class="num">6</span><h2>Çalışma şekli</h2></legend>
         <div class="field" style="margin-bottom:18px">
+          <label class="lab" for="power">Yapay zeka modeli</label>
+          <select id="power">
+            <option value="guclu">Güçlü model (Claude Sonnet/Opus, GPT-5, Gemini Pro)</option>
+            <option value="zayif">Orta veya zayıf model (MiniMax, küçük ve açık modeller)</option>
+          </select>
+          <span class="hint">Zayıf model seçersen akış daha kısa ve adım adım yazılır, hazır komutlar verilir.</span>
+        </div>
+        <div class="field" style="margin-bottom:18px">
           <label class="lab" for="tool">Kullanacağın yapay zeka aracı</label>
           <select id="tool">
             <option value="claude">Claude Code</option>
@@ -480,11 +508,16 @@ footer { margin-top: 36px; color: var(--muted); font-size: 13px; max-width: 70ch
       </section>
 
       <section class="card">
-        <h3>Komutu yapıştır</h3>
+        <h3>Başlat</h3>
         <p id="cmdHelp">Yapay zeka aracına bu tek satırı yapıştır.</p>
-        <textarea id="short" class="line" readonly aria-label="Komut"></textarea>
-        <button type="button" class="btn" data-copy="short">Komutu kopyala</button>
-        <div class="status" id="st-short" role="status"></div>
+        <button type="button" class="btn" id="go" hidden>Edit'i başlat</button>
+        <div class="status" id="goStatus" role="status"></div>
+        <details class="more" id="manualcmd">
+          <summary>Elle yapıştırmak istersen</summary>
+          <textarea id="short" class="line" readonly aria-label="Komut"></textarea>
+          <button type="button" class="btn alt" data-copy="short">Komutu kopyala</button>
+          <div class="status" id="st-short" role="status"></div>
+        </details>
       </section>
 
       <details class="more" id="manual">
@@ -849,18 +882,37 @@ document.addEventListener('click', e => {
   if (e.target.closest('#playAll')) playAll();
 });
 
+let srcInfo = null;
+$('#vfile').addEventListener('change', () => {
+  const f = $('#vfile').files && $('#vfile').files[0];
+  srcInfo = null;
+  if (!f) { $('#vmeta').textContent = 'Videoyu seçince çözünürlük ve süre otomatik okunur.'; build(); return; }
+  const url = URL.createObjectURL(f), v = document.createElement('video');
+  v.preload = 'metadata';
+  v.onloadedmetadata = () => {
+    const kind = v.videoWidth / v.videoHeight > 1.2 ? 'yatay' : v.videoWidth / v.videoHeight < 0.83 ? 'dikey' : 'kare';
+    srcInfo = { w: v.videoWidth, h: v.videoHeight, dur: v.duration, kind };
+    const m = Math.floor(v.duration / 60), sn = Math.round(v.duration % 60);
+    $('#vmeta').textContent = 'Algılandı: ' + v.videoWidth + '×' + v.videoHeight + ' (' + kind + '), ' + m + ' dk ' + sn + ' sn';
+    $('#dur').value = Math.max(1, Math.ceil(v.duration / 60));
+    URL.revokeObjectURL(url); build();
+  };
+  v.onerror = () => { $('#vmeta').textContent = 'Video bilgisi okunamadı. Tarayıcı bu biçimi çözemiyor olabilir, sorun değil.'; URL.revokeObjectURL(url); build(); };
+  v.src = url;
+});
+
 /* ---------- dosyalar: yerel sunucu varsa otomatik, yoksa Chrome/Edge klasör seçici ---------- */
 const FS_OK = typeof window.showDirectoryPicker === 'function';
 let SERVER = false, touched = false, lastBuild = null;
 const upMap = new Map();
-let syncTimer = 0, syncBusy = false, syncAgain = false, syncedSlug = '', lastBriefSent = '';
+let syncTimer = 0, syncBusy = false, syncAgain = false, syncedSlug = '', lastBriefSent = '', syncOk = false;
 const fsStatus = (txt, ok) => { const st = $('#fsStatus'); st.className = 'status' + (ok ? ' ok' : ''); st.textContent = txt; };
 function updateFsUi() {
   const btn = $('#fsBtn'), help = $('#fsHelp');
   btn.hidden = SERVER || !FS_OK;
   if (SERVER) help.textContent = 'Videon, materyallerin ve brifin proje klasörüne otomatik yerleşiyor. Bir şey yapman gerekmiyor.';
-  else if (FS_OK) help.textContent = 'Formu form.bat ile açarsan dosyalar otomatik yerleşir. Şimdilik düğmeyle proje klasörünü seçebilirsin.';
-  else help.textContent = 'Dosyalar otomatik yerleşemiyor. Formu form.bat ile aç. Olmazsa brifin tam metnini kopyalayıp aracına yapıştır.';
+  else if (FS_OK) help.textContent = 'Formu baslat.bat ile açarsan dosyalar otomatik yerleşir. Şimdilik düğmeyle proje klasörünü seçebilirsin.';
+  else help.textContent = 'Dosyalar otomatik yerleşemiyor. Formu baslat.bat ile aç. Olmazsa brifin tam metnini kopyalayıp aracına yapıştır.';
   $('#short').classList.toggle('line', SERVER || FS_OK);
   build();
 }
@@ -905,9 +957,11 @@ async function sync() {
     }
     if (b.prompt !== lastBriefSent) { await post(['materyaller', b.sl], 'brief.md', b.prompt); lastBriefSent = b.prompt; }
     const t = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    syncOk = true;
     fsStatus('Yerleşti: ' + b.jobs.length + ' dosya, brif güncel (materyaller/' + b.sl + '/brief.md, ' + t + ')', true);
   } catch (e) {
-    fsStatus('Yazılamadı (' + (e && e.message ? e.message : 'hata') + '). form.bat penceresi açık mı?', false);
+    syncOk = false;
+    fsStatus('Yazılamadı (' + (e && e.message ? e.message : 'hata') + '). baslat.bat penceresi açık mı?', false);
   } finally {
     syncBusy = false;
     if (syncAgain) { syncAgain = false; scheduleSync(100); }
@@ -934,10 +988,29 @@ async function prepare() {
     fsStatus('Hazır. ' + b.jobs.length + ' dosya kopyalandı, brif yazıldı: materyaller/' + b.sl + '/brief.md.', true);
   } catch (e) {
     if (e && e.name === 'AbortError') return;
-    fsStatus('Yazılamadı (' + (e && (e.name || e.message) ? (e.name || e.message) : 'hata') + '). Formu form.bat ile açmayı dene.', false);
+    fsStatus('Yazılamadı (' + (e && (e.name || e.message) ? (e.name || e.message) : 'hata') + '). Formu baslat.bat ile açmayı dene.', false);
   }
 }
 $('#fsBtn').addEventListener('click', prepare);
+$('#go').addEventListener('click', async () => {
+  const b = lastBuild, st = $('#goStatus'), btn = $('#go');
+  if (!b) return;
+  const say = (t, ok) => { st.className = 'status' + (ok ? ' ok' : ''); st.textContent = t; };
+  btn.disabled = true; say('Dosyalar kontrol ediliyor...', false);
+  touched = true; clearTimeout(syncTimer); lastBriefSent = '';
+  let n = 0; while (syncBusy && n++ < 600) await new Promise(r => setTimeout(r, 100));
+  syncOk = false; await sync();
+  if (!syncOk) { say('Dosyalar yerleşemedi. Yukarıdaki Dosya durumu kartına bak.', false); btn.disabled = false; return; }
+  try {
+    const q = '?tool=' + encodeURIComponent($('#tool').value) + '&slug=' + encodeURIComponent(b.sl) + '&weak=' + ($('#power').value === 'zayif' ? '1' : '0');
+    const r = await fetch('/api/baslat' + q, { method: 'POST', headers: { 'X-Form': '1' } });
+    const j = await r.json().catch(() => ({}));
+    if (r.ok && j.ok) say('Terminal penceresi açıldı, yapay zeka işe başladı. İlerlemeyi o pencerede göreceksin.', true);
+    else if (j.error === 'sadece-windows') say('Otomatik başlatma sadece Windows\'ta çalışır. "Elle yapıştırmak istersen" bölümünü kullan.', false);
+    else say('Başlatılamadı (' + (j.error || r.status) + '). "Elle yapıştırmak istersen" bölümünü dene.', false);
+  } catch (e) { say('Sunucuya ulaşılamadı. baslat.bat penceresi açık mı?', false); }
+  btn.disabled = false;
+});
 
 /* ---------- ana derleme ---------- */
 function build() {
@@ -976,6 +1049,7 @@ function build() {
   const mn = mfile ? mfile.name : '';
   $('#mname').textContent = mn;
   const vfile = $('#vfile').files ? $('#vfile').files[0] : null;
+  const tfile = $('#tfile').files ? $('#tfile').files[0] : null;
   const vn = vfile ? vfile.name : '';
   $('#vname').textContent = vn;
   const videoFile = vn || 'video dosyası';
@@ -1016,8 +1090,12 @@ function build() {
   const brief = [
     '## Brief: ' + name,
     '- Video: ' + videoFile + ' (klasör: ' + base + 'video/)',
-    '- Görüntü oranı: ' + fmt,
-    '- Süre: yaklaşık ' + dur + ' dakika',
+    '- Kaynak video: ' + (srcInfo ? srcInfo.w + 'x' + srcInfo.h + ' (' + srcInfo.kind + ')' : 'bilinmiyor, ffprobe ile bak'),
+    '- Çıktı oranı: ' + fmt + (fmt.indexOf('9:16') === 0 && (!srcInfo || srcInfo.kind === 'yatay') ? '. Kaynak yatay: ekranı sığdırıp altını boş bırakma, talimat/video-edit.md içindeki "5D. Dikey çıktı" akışını uygula (ekranı kırp ve takip et).' : ''),
+    '- Süre: ' + (srcInfo ? Math.floor(srcInfo.dur / 60) + ' dk ' + Math.round(srcInfo.dur % 60) + ' sn (dosyadan okundu)' : 'yaklaşık ' + dur + ' dakika'),
+    '- Videonun konusu: ' + ($('#topic').value.trim() || 'belirtilmedi, konuşmadan çıkar'),
+    '- Transkript: ' + (tfile ? 'verildi (materyal/transkript/' + tfile.name + '). Konuşmayı yazıya dökme, bunu kullan.' : 'yok, konuşmayı kendin yazıya dök'),
+    '- Durağan ekran: ' + $('#still').value + '. Hiçbir aralıkta 3 saniyeden uzun değişmeyen görüntü bırakma.',
     '- Tür: ' + type,
     '- Video hızı: ' + $('#speed').value,
     '- Video durumu: ' + (raw === 'cut' ? 'Kendim kestim, kesime dokunma. Sadece istenen efektleri ekle.' : 'Ham video. Hatalı ve gereksiz yerleri kes. Art arda tekrar edilen cümlelerde sonuncusunu al.'),
@@ -1071,16 +1149,23 @@ function build() {
     other: { n: 'Aracın', cmd: '', note: 'Akış Claude Code ile hazırlandı ve onunla denendi. Aracın dosya okuyup yazabilmeli, komut çalıştırabilmeli ve görsel dosyaları görebilmeli.' }
   };
   const tl = TOOLS[$('#tool').value];
-  $('#toolHint').textContent = (tl.cmd ? 'Proje klasöründe terminale şunu yaz: ' + tl.cmd + '. ' : '') + tl.note;
-  $('#cmdHelp').textContent = (tl.cmd ? tl.n + ' içinde' : 'Yapay zeka aracına') + ' bu tek satırı yapıştır.';
-  const prompt = 'Bu videoyu aşağıdaki brife göre edit et. Akış için talimat/video-edit.md dosyasını oku ve uygula.\n\n' + brief + '\n\n' + flow + '\n\n' + rules + '\n';
+  $('#toolHint').textContent = (tl.cmd ? 'Proje klasöründeki terminal.bat dosyasını aç ve şunu yaz: ' + tl.cmd + '. ' : '') + tl.note;
+  const canGo = SERVER && ['claude', 'codex', 'gemini'].includes($('#tool').value);
+  $('#go').hidden = !canGo;
+  $('#manualcmd').open = !canGo;
+  $('#cmdHelp').textContent = canGo
+    ? 'Başlat\'a basınca bir terminal penceresi açılır ve ' + tl.n + ' işe başlar. İlk seferde giriş yapman istenebilir.'
+    : (tl.cmd ? tl.n + ' içinde' : 'Yapay zeka aracına') + ' bu tek satırı yapıştır.';
+  const weak = $('#power').value === 'zayif';
+  const prompt = (weak ? 'Önce talimat/adim-adim.md dosyasını oku ve harfiyen uygula. Ayrıntı gerekirse talimat/video-edit.md dosyasına bak. Hazır betikleri kullan, kendi filtreni yazma.\n\n' : 'Bu videoyu aşağıdaki brife göre edit et. Akış için talimat/video-edit.md dosyasını oku ve uygula.\n\n') + brief + '\n\n' + flow + '\n\n' + rules + '\n';
   $('#prompt').value = prompt;
-  $('#short').value = 'materyaller/' + sl + '/brief.md dosyasını oku ve talimat/video-edit.md dosyasındaki akışa göre videoyu edit et.' + ($('#tool').value === 'claude' ? ' video-edit skill\'ini kullan.' : '');
+  $('#short').value = 'materyaller/' + sl + '/brief.md dosyasını oku ve talimat/video-edit.md dosyasındaki akışa göre videoyu edit et.' + (weak ? ' Önce talimat/adim-adim.md dosyasını oku.' : '') + ($('#tool').value === 'claude' ? ' video-edit skill\'ini kullan.' : '');
 
   const jobs = [];
   if (vfile) jobs.push({ dir: 'video', file: vfile });
   MATS.forEach(m => { if ($('#mat-' + m.k).value === 'ben') [...$('#f-' + m.k).files].forEach(f => jobs.push({ dir: 'materyal/' + m.f, file: f })); });
   if (mfile) jobs.push({ dir: 'materyal/ses-ve-font', file: mfile });
+  if (tfile) jobs.push({ dir: 'materyal/transkript', file: tfile });
   lastBuild = { sl, prompt, jobs };
   if (!SERVER && !FS_OK) $('#short').value = prompt;
   scheduleSync();
@@ -1111,7 +1196,7 @@ document.querySelectorAll('[data-copy]').forEach(btn => btn.addEventListener('cl
 }));
 
 /* ---------- kayıtlı ayarlar ---------- */
-const PR_SKIP = new Set(['name', 'dur', 'notes', 'hookText', 'prName', 'prSel', 'prompt', 'short']);
+const PR_SKIP = new Set(['name', 'dur', 'notes', 'topic', 'hookText', 'prName', 'prSel', 'prompt', 'short']);
 let presets = {};
 const prMsg = (t, ok) => { const e = $('#prStatus'); e.className = 'status' + (ok ? ' ok' : ''); e.textContent = t; };
 function collectSettings() {
@@ -1155,7 +1240,7 @@ async function writePresets() {
     if (!r.ok) throw new Error('sunucu');
     return 'Proje klasöründeki ayarlar/stiller.json dosyasına kaydedildi.';
   }
-  try { localStorage.setItem('editFormAyarlar', JSON.stringify(presets)); return 'Bu tarayıcıya kaydedildi. Kalıcı olması için formu form.bat ile aç.'; }
+  try { localStorage.setItem('editFormAyarlar', JSON.stringify(presets)); return 'Bu tarayıcıya kaydedildi. Kalıcı olması için formu baslat.bat ile aç.'; }
   catch (e) { throw new Error('tarayıcı kayda izin vermiyor'); }
 }
 async function loadPresets(sel) { presets = await readPresets(); fillPresetList(sel); }

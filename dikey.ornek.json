@@ -1,0 +1,99 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "fps": 30,
+ "duration": 14,
+ "hiz": 1,
+ "video": "test.mp4",
+ "srcW": 1920,
+ "srcH": 1080,
+ "face": {
+  "x": 81,
+  "y": 59,
+  "w": 17,
+  "h": 37
+ },
+ "faceShow": [
+  [
+   0,
+   2.5
+  ],
+  [
+   11.5,
+   14
+  ]
+ ],
+ "kadraj": [
+  {
+   "t": 0,
+   "cx": 50,
+   "cy": 50,
+   "w": 100
+  },
+  {
+   "t": 2.5,
+   "cx": 40,
+   "cy": 38,
+   "w": 48
+  },
+  {
+   "t": 7,
+   "cx": 45,
+   "cy": 44,
+   "w": 40
+  },
+  {
+   "t": 11.5,
+   "cx": 50,
+   "cy": 50,
+   "w": 70
+  }
+ ],
+ "theme": {
+  "primary": "#ffffff",
+  "secondary": "#16181d",
+  "accent": "#fff15c",
+  "style": "editoryal"
+ },
+ "events": [
+  {
+   "type": "counter",
+   "start": 3,
+   "dur": 3,
+   "to": 995826895,
+   "label": "kişi her gün aynı promptu yazıyor",
+   "ref": "ekran",
+   "pos": "alt"
+  },
+  {
+   "type": "frame",
+   "start": 7.2,
+   "dur": 2.6,
+   "x": 10,
+   "y": 30,
+   "w": 80,
+   "h": 14,
+   "label": "Önemli satır",
+   "ref": "ekran"
+  },
+  {
+   "type": "marker",
+   "start": 8.2,
+   "dur": 2.0,
+   "x": 12,
+   "y": 34,
+   "w": 60,
+   "h": 6,
+   "ref": "ekran"
+  },
+  {
+   "type": "text",
+   "start": 10.2,
+   "dur": 1.3,
+   "text": "Dikkat: kişisel bilgi",
+   "tone": "uyari",
+   "pos": "ust",
+   "ref": "ekran"
+  }
+ ]
+}

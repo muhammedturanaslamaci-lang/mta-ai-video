@@ -1,19 +1,20 @@
 import React from 'react';
-import {AbsoluteFill, Img, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Img, Sequence, interpolate, spring, staticFile, useCurrentFrame} from 'remotion';
+import {useVC} from './box';
 import {Ev, Props, Theme} from './types';
 import {bright, fontFor, panel, place, readable} from './theme';
 
 // Giriş ve çıkış: 0 -> 1 -> 0
 const useLife = (dur: number) => {
   const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
+  const {fps} = useVC();
   const inn = spring({frame, fps, config: {damping: 200}, durationInFrames: Math.round(fps * 0.35)});
   const out = interpolate(frame, [dur - Math.round(fps * 0.25), dur], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return {p: Math.min(inn, out), frame, fps};
 };
 
 const Wrap: React.FC<{ev: Ev & {pos?: any}; dur: number; theme: Theme; children: React.ReactNode}> = ({ev, dur, theme, children}) => {
-  const {width, height} = useVideoConfig();
+  const {width, height} = useVC();
   const {p} = useLife(dur);
   return (
     <div style={{...place(ev.pos, width, height), opacity: p, transform: `translateY(${(1 - p) * 24}px)`, fontFamily: fontFor(theme)}}>
@@ -22,11 +23,10 @@ const Wrap: React.FC<{ev: Ev & {pos?: any}; dur: number; theme: Theme; children:
   );
 };
 
-const unit = (w: number) => w / 1920;
 
 const Logo: React.FC<{ev: Extract<Ev, {type: 'logo'}>; dur: number; theme: Theme}> = ({ev, dur, theme}) => {
-  const {width} = useVideoConfig();
-  const u = unit(width);
+  const {width} = useVC();
+  const u = useVC().u;
   return (
     <Wrap ev={{...ev, pos: ev.pos ?? 'sag-ust'}} dur={dur} theme={theme}>
       <div style={{...panel(theme, u), display: 'flex', alignItems: 'center', gap: 16 * u}}>
@@ -38,9 +38,9 @@ const Logo: React.FC<{ev: Extract<Ev, {type: 'logo'}>; dur: number; theme: Theme
 };
 
 const Counter: React.FC<{ev: Extract<Ev, {type: 'counter'}>; dur: number; theme: Theme}> = ({ev, dur, theme}) => {
-  const {width} = useVideoConfig();
+  const {width} = useVC();
   const frame = useCurrentFrame();
-  const u = unit(width);
+  const u = useVC().u;
   const t = interpolate(frame, [0, Math.min(dur * 0.7, 60)], [0, 1], {extrapolateRight: 'clamp'});
   const eased = 1 - Math.pow(1 - t, 3);
   const from = ev.from ?? 0;
@@ -60,9 +60,9 @@ const Counter: React.FC<{ev: Extract<Ev, {type: 'counter'}>; dur: number; theme:
 };
 
 const Search: React.FC<{ev: Extract<Ev, {type: 'search'}>; dur: number; theme: Theme}> = ({ev, dur, theme}) => {
-  const {width} = useVideoConfig();
+  const {width} = useVC();
   const frame = useCurrentFrame();
-  const u = unit(width);
+  const u = useVC().u;
   const typed = Math.min(ev.query.length, Math.floor(frame / 2.2));
   const caret = Math.floor(frame / 12) % 2 === 0 ? '|' : ' ';
   return (
@@ -84,9 +84,9 @@ const Search: React.FC<{ev: Extract<Ev, {type: 'search'}>; dur: number; theme: T
 
 // Vurgulanacak alanı çerçeveye alır. Koordinatlar yüzde.
 const Frame: React.FC<{ev: Extract<Ev, {type: 'frame'}>; dur: number; theme: Theme}> = ({ev, dur, theme}) => {
-  const {width, height} = useVideoConfig();
+  const {width, height} = useVC();
   const {p} = useLife(dur);
-  const u = unit(width);
+  const u = useVC().u;
   const col = theme.accent;
   const x = (ev.x / 100) * width, y = (ev.y / 100) * height, w = (ev.w / 100) * width, h = (ev.h / 100) * height;
   return (
@@ -99,8 +99,8 @@ const Frame: React.FC<{ev: Extract<Ev, {type: 'frame'}>; dur: number; theme: The
 };
 
 const Card: React.FC<{ev: Extract<Ev, {type: 'card'}>; dur: number; theme: Theme}> = ({ev, dur, theme}) => {
-  const {width} = useVideoConfig();
-  const u = unit(width);
+  const {width} = useVC();
+  const u = useVC().u;
   return (
     <Wrap ev={{...ev, pos: ev.pos ?? 'orta'}} dur={dur} theme={theme}>
       <div style={{...panel(theme, u), maxWidth: 1100 * u}}>
@@ -113,8 +113,8 @@ const Card: React.FC<{ev: Extract<Ev, {type: 'card'}>; dur: number; theme: Theme
 
 // Ekran görüntüsünü pencere çerçevesi içinde gösterir
 const Shot: React.FC<{ev: Extract<Ev, {type: 'shot'}>; dur: number; theme: Theme}> = ({ev, dur, theme}) => {
-  const {width, height} = useVideoConfig();
-  const u = unit(width);
+  const {width, height} = useVC();
+  const u = useVC().u;
   return (
     <Wrap ev={{...ev, pos: ev.pos ?? 'orta'}} dur={dur} theme={theme}>
       <div style={{background: '#fff', borderRadius: 14 * u, overflow: 'hidden', boxShadow: `0 ${24 * u}px ${70 * u}px rgba(0,0,0,.4)`}}>
@@ -129,8 +129,8 @@ const Shot: React.FC<{ev: Extract<Ev, {type: 'shot'}>; dur: number; theme: Theme
 };
 
 const Text: React.FC<{ev: Extract<Ev, {type: 'text'}>; dur: number; theme: Theme}> = ({ev, dur, theme}) => {
-  const {width} = useVideoConfig();
-  const u = unit(width);
+  const {width} = useVC();
+  const u = useVC().u;
   const warn = ev.tone === 'uyari';
   return (
     <Wrap ev={ev} dur={dur} theme={theme}>
@@ -146,8 +146,8 @@ type CP<T extends Ev['type']> = {ev: E<T>; dur: number; theme: Theme};
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 
 const Title: React.FC<CP<'title'>> = ({ev, dur, theme}) => {
-  const {width} = useVideoConfig();
-  const u = unit(width);
+  const {width} = useVC();
+  const u = useVC().u;
   return (
     <Wrap ev={{...ev, pos: ev.pos ?? 'orta'}} dur={dur} theme={theme}>
       <div style={{...panel(theme, u), textAlign: 'center', maxWidth: 1300 * u}}>
@@ -159,8 +159,8 @@ const Title: React.FC<CP<'title'>> = ({ev, dur, theme}) => {
 };
 
 const LowerThird: React.FC<CP<'lowerthird'>> = ({ev, dur, theme}) => {
-  const {width} = useVideoConfig();
-  const u = unit(width);
+  const {width} = useVC();
+  const u = useVC().u;
   return (
     <Wrap ev={{...ev, pos: 'sol-alt'}} dur={dur} theme={theme}>
       <div style={panel(theme, u)}>
@@ -172,9 +172,9 @@ const LowerThird: React.FC<CP<'lowerthird'>> = ({ev, dur, theme}) => {
 };
 
 const List: React.FC<CP<'list'>> = ({ev, dur, theme}) => {
-  const {width, fps} = useVideoConfig();
+  const {width, fps} = useVC();
   const frame = useCurrentFrame();
-  const u = unit(width);
+  const u = useVC().u;
   return (
     <Wrap ev={{...ev, pos: ev.pos ?? 'orta'}} dur={dur} theme={theme}>
       <div style={{...panel(theme, u), maxWidth: 1200 * u}}>
@@ -193,9 +193,9 @@ const List: React.FC<CP<'list'>> = ({ev, dur, theme}) => {
 };
 
 const Cursor: React.FC<CP<'cursor'>> = ({ev, dur, theme}) => {
-  const {width, height} = useVideoConfig();
+  const {width, height} = useVC();
   const frame = useCurrentFrame();
-  const u = unit(width);
+  const u = useVC().u;
   const {p} = useLife(dur);
   const move = ev.ring ? 0 : Math.max(6, Math.round(dur * 0.55));
   const t = 1 - Math.pow(1 - interpolate(frame, [0, move], [0, 1], clamp), 3);
@@ -215,8 +215,8 @@ const Cursor: React.FC<CP<'cursor'>> = ({ev, dur, theme}) => {
 };
 
 const Keys: React.FC<CP<'keys'>> = ({ev, dur, theme}) => {
-  const {width} = useVideoConfig();
-  const u = unit(width);
+  const {width} = useVC();
+  const u = useVC().u;
   return (
     <Wrap ev={{...ev, pos: ev.pos ?? 'alt'}} dur={dur} theme={theme}>
       <div style={{display: 'flex', alignItems: 'center', gap: 14 * u}}>
@@ -232,15 +232,15 @@ const Keys: React.FC<CP<'keys'>> = ({ev, dur, theme}) => {
 };
 
 const Progress: React.FC<CP<'progress'>> = ({dur, theme}) => {
-  const {width} = useVideoConfig();
+  const {width} = useVC();
   const frame = useCurrentFrame();
-  const u = unit(width);
+  const u = useVC().u;
   return <div style={{position: 'absolute', left: 0, top: 0, height: 10 * u, width: `${(frame / dur) * 100}%`, background: theme.primary, boxShadow: `0 0 ${10 * u}px rgba(0,0,0,.4)`}} />;
 };
 
 const Compare: React.FC<CP<'compare'>> = ({ev, dur, theme}) => {
-  const {width, height} = useVideoConfig();
-  const u = unit(width);
+  const {width, height} = useVC();
+  const u = useVC().u;
   const box = (file: string, label: string) => (
     <div style={{position: 'relative', borderRadius: 14 * u, overflow: 'hidden', boxShadow: `0 ${20 * u}px ${60 * u}px rgba(0,0,0,.4)`, background: '#fff'}}>
       <Img src={staticFile('m/' + file)} style={{display: 'block', maxWidth: width * 0.38, maxHeight: height * 0.6}} />
@@ -258,9 +258,9 @@ const Compare: React.FC<CP<'compare'>> = ({ev, dur, theme}) => {
 };
 
 const Chart: React.FC<CP<'chart'>> = ({ev, dur, theme}) => {
-  const {width, fps} = useVideoConfig();
+  const {width, fps} = useVC();
   const frame = useCurrentFrame();
-  const u = unit(width);
+  const u = useVC().u;
   const max = Math.max(...ev.bars, 1);
   return (
     <Wrap ev={{...ev, pos: ev.pos ?? 'orta'}} dur={dur} theme={theme}>
@@ -287,29 +287,29 @@ const Chart: React.FC<CP<'chart'>> = ({ev, dur, theme}) => {
 };
 
 const Spotlight: React.FC<CP<'spotlight'>> = ({ev, dur, theme}) => {
-  const {width, height} = useVideoConfig();
+  const {width, height} = useVC();
   const {p} = useLife(dur);
-  const u = unit(width);
+  const u = useVC().u;
   return (
     <div style={{position: 'absolute', left: (ev.x / 100) * width, top: (ev.y / 100) * height, width: (ev.w / 100) * width, height: (ev.h / 100) * height, borderRadius: 16 * u, boxShadow: `0 0 0 ${Math.max(width, height)}px rgba(0,0,0,${0.7 * p})`, border: `${3 * u}px solid ${theme.primary}`, opacity: p > 0 ? 1 : 0}} />
   );
 };
 
 const Marker: React.FC<CP<'marker'>> = ({ev, dur, theme}) => {
-  const {width, height} = useVideoConfig();
+  const {width, height} = useVC();
   const frame = useCurrentFrame();
   const {p} = useLife(dur);
   const grow = interpolate(frame, [0, 14], [0, 1], clamp);
   return (
-    <div style={{position: 'absolute', left: (ev.x / 100) * width, top: (ev.y / 100) * height, width: (ev.w / 100) * width, height: (ev.h / 100) * height, background: theme.accent, opacity: 0.42 * (p > 0 ? 1 : 0), borderRadius: 6 * unit(width), transform: `scaleX(${grow})`, transformOrigin: 'left center'}} />
+    <div style={{position: 'absolute', left: (ev.x / 100) * width, top: (ev.y / 100) * height, width: (ev.w / 100) * width, height: (ev.h / 100) * height, background: theme.accent, opacity: 0.42 * (p > 0 ? 1 : 0), borderRadius: 6 * useVC().u, transform: `scaleX(${grow})`, transformOrigin: 'left center'}} />
   );
 };
 
 const Arrow: React.FC<CP<'arrow'>> = ({ev, dur, theme}) => {
-  const {width, height} = useVideoConfig();
+  const {width, height} = useVC();
   const frame = useCurrentFrame();
   const {p} = useLife(dur);
-  const u = unit(width);
+  const u = useVC().u;
   const from = ev.from ?? 'sag';
   const rot = {sol: 0, sag: 180, ust: 90, alt: -90}[from];
   const tr = {sol: 'translate(-100%,-50%)', sag: 'translate(0,-50%)', ust: 'translate(-50%,-100%)', alt: 'translate(-50%,0)'}[from];
@@ -327,9 +327,9 @@ const Arrow: React.FC<CP<'arrow'>> = ({ev, dur, theme}) => {
 };
 
 const Subscribe: React.FC<CP<'subscribe'>> = ({ev, dur, theme}) => {
-  const {width} = useVideoConfig();
+  const {width} = useVC();
   const frame = useCurrentFrame();
-  const u = unit(width);
+  const u = useVC().u;
   const pulse = 1 + 0.06 * Math.max(0, Math.sin(frame / 4));
   return (
     <Wrap ev={{...ev, pos: ev.pos ?? 'sol-alt'}} dur={dur} theme={theme}>
@@ -339,8 +339,8 @@ const Subscribe: React.FC<CP<'subscribe'>> = ({ev, dur, theme}) => {
 };
 
 const Chapter: React.FC<CP<'chapter'>> = ({ev, dur, theme}) => {
-  const {width} = useVideoConfig();
-  const u = unit(width);
+  const {width} = useVC();
+  const u = useVC().u;
   return (
     <Wrap ev={{...ev, pos: 'sol-ust'}} dur={dur} theme={theme}>
       <div style={{...panel(theme, u * 0.75), fontSize: 34 * u, fontWeight: 700}}>{ev.index ? `${ev.index} · ` : ''}{ev.label}</div>
@@ -349,9 +349,9 @@ const Chapter: React.FC<CP<'chapter'>> = ({ev, dur, theme}) => {
 };
 
 const Countdown: React.FC<CP<'countdown'>> = ({ev, dur, theme}) => {
-  const {width, fps} = useVideoConfig();
+  const {width, fps} = useVC();
   const frame = useCurrentFrame();
-  const u = unit(width);
+  const u = useVC().u;
   const n = Math.max(0, ev.from - Math.floor(frame / fps));
   const k = interpolate(frame % fps, [0, 8, fps], [1.25, 1, 1], clamp);
   return (
@@ -362,9 +362,9 @@ const Countdown: React.FC<CP<'countdown'>> = ({ev, dur, theme}) => {
 };
 
 const Caption: React.FC<CP<'caption'>> = ({ev, dur, theme}) => {
-  const {width} = useVideoConfig();
+  const {width} = useVC();
   const frame = useCurrentFrame();
-  const u = unit(width);
+  const u = useVC().u;
   const words = ev.text.split(/\s+/);
   const idx = Math.min(words.length - 1, Math.floor((frame / dur) * words.length));
   const hi = bright(theme.primary, theme.accent);
@@ -379,7 +379,7 @@ const Caption: React.FC<CP<'caption'>> = ({ev, dur, theme}) => {
   );
 };
 
-const One: React.FC<{ev: Ev; dur: number; theme: Theme}> = ({ev, dur, theme}) => {
+export const One: React.FC<{ev: Ev; dur: number; theme: Theme}> = ({ev, dur, theme}) => {
   switch (ev.type) {
     case 'logo': return <Logo ev={ev} dur={dur} theme={theme} />;
     case 'counter': return <Counter ev={ev} dur={dur} theme={theme} />;

@@ -7,7 +7,10 @@
     "studio": "remotion studio src/index.ts",
     "tip": "tsc --noEmit",
     "katman": "remotion render src/index.ts Overlay out/katman.webm --props=katman.json --codec=vp8 --pixel-format=yuva420p --image-format=png",
-    "form": "node server.mjs"
+    "form": "node server.mjs",
+    "dikey": "remotion render src/index.ts Dikey out/dikey-sessiz.mp4 --props=dikey.json --codec=h264 --muted",
+    "analiz": "node scripts/analiz.mjs",
+    "kontrol": "node scripts/kontrol.mjs"
   },
   "dependencies": {
     "@remotion/cli": "4.0.540",
