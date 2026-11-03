@@ -87,12 +87,11 @@ const Frame: React.FC<{ev: Extract<Ev, {type: 'frame'}>; dur: number; theme: The
   const {width, height} = useVC();
   const {p} = useLife(dur);
   const u = useVC().u;
-  const col = theme.accent;
   const x = (ev.x / 100) * width, y = (ev.y / 100) * height, w = (ev.w / 100) * width, h = (ev.h / 100) * height;
   return (
     <div style={{position: 'absolute', left: x, top: y, width: w, height: h, opacity: p, fontFamily: fontFor(theme)}}>
       <div style={{position: 'absolute', inset: 0, border: `${4 * u}px solid ${theme.primary}`, borderRadius: (theme.style === 'cam' ? 18 : 6) * u, transform: `scale(${1.04 - 0.04 * p})`}} />
-      <div style={{position: 'absolute', left: 0, bottom: -10 * u, height: 6 * u, width: `${p * 100}%`, background: col, borderRadius: 3 * u}} />
+      <div style={{position: 'absolute', left: 0, bottom: -10 * u, height: 6 * u, width: `${p * 100}%`, background: theme.primary, borderRadius: 3 * u}} />
       {ev.label ? <div style={{position: 'absolute', left: 0, top: -58 * u, ...panel(theme, u * 0.7), fontSize: 30 * u}}>{ev.label}</div> : null}
     </div>
   );

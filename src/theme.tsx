@@ -20,7 +20,7 @@ export const panel = (t: Theme, scale: number): React.CSSProperties => {
   const br = bright(t.primary, t.secondary);
   switch (t.style) {
     case 'cizgi':
-      return {background: 'rgba(8,10,14,0.55)', border: `${r(2)}px solid ${br}`, borderRadius: r(6), color: br, padding: `${r(14)}px ${r(22)}px`};
+      return {background: 'rgba(10,12,16,0.93)', border: `${r(2)}px solid ${br}`, borderRadius: r(6), color: br, padding: `${r(14)}px ${r(22)}px`};
     case 'blok':
       return {background: t.primary, color: readable(t.primary), borderRadius: r(4), padding: `${r(16)}px ${r(28)}px`, fontWeight: 800};
     case 'cam':

@@ -3,6 +3,15 @@ import {Composition} from 'remotion';
 import {Overlay} from './Overlay';
 import {Props, DikeyProps} from './types';
 import {Dikey} from './Dikey';
+import {Grafik, GProps} from './Grafik';
+
+const grafikDemo: GProps = {
+  width: 1080, height: 1920, fps: 30, duration: 12,
+  theme: {primary: '#1bbdc0', secondary: '#000000', accent: '#ffffff', style: 'terminal'},
+  faceShow: [[0, 5]], faceIntro: 'yp-face-intro.mp4', faceCta: 'yp-face-cta.mp4',
+  adimBas: [1, 4, 7, 10],
+  events: []
+};
 
 const demo: Props = {
   width: 1920, height: 1080, fps: 30, duration: 12,
@@ -45,6 +54,19 @@ export const Root: React.FC = () => (
     fps={dikeyDemo.fps}
     durationInFrames={dikeyDemo.duration * dikeyDemo.fps}
     defaultProps={dikeyDemo}
+    calculateMetadata={({props}) => ({
+      width: 1080, height: 1920, fps: props.fps,
+      durationInFrames: Math.max(1, Math.round(props.duration * props.fps))
+    })}
+  />
+  <Composition
+    id="Grafik"
+    component={Grafik}
+    width={1080}
+    height={1920}
+    fps={grafikDemo.fps}
+    durationInFrames={grafikDemo.duration * grafikDemo.fps}
+    defaultProps={grafikDemo}
     calculateMetadata={({props}) => ({
       width: 1080, height: 1920, fps: props.fps,
       durationInFrames: Math.max(1, Math.round(props.duration * props.fps))

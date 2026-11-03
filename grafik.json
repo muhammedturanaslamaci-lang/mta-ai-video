@@ -1,0 +1,94 @@
+{
+ "width": 1080,
+ "height": 1920,
+ "fps": 30,
+ "duration": 58.5,
+ "theme": {"primary": "#1bbdc0", "secondary": "#000000", "accent": "#ffffff", "style": "terminal"},
+ "faceShow": [[0, 6.4], [52.4, 58.5]],
+ "faceIntro": "yp-face-intro.mp4",
+ "faceCta": "yp-face-cta.mp4",
+ "adimBas": [5.6, 17.1, 25.0, 33.4, 45.1],
+ "events": [
+  {
+   "type": "giris", "start": 0, "dur": 6.4,
+   "logo": "yp-chatgpt.svg",
+   "title": "1 milyar kişi hâlâ uzun yazıyor",
+   "sub": "5 kısayolla 10 saniyede aynı cevap",
+   "cTo": 1000000000, "cSuffix": " kişi", "cLabel": "her gün yapay zekâya uzun yazıyor"
+  },
+  {
+   "type": "sohbet", "start": 5.6, "dur": 11.4,
+   "prompt": "Bu metin robotik mi, insan eli gibi mi?",
+   "cmd": "/humanize",
+   "reply": "Metnini yapıştır; tıpkı insan yazmış gibi düzeltir."
+  },
+  {
+   "type": "panel", "start": 5.6, "dur": 11.4, "kind": "humanize", "baslik": "1. KOMUT  ·  /humanize"
+  },
+  {
+   "type": "frame", "start": 8.6, "dur": 1.8, "x": 12.5, "y": 21.5, "w": 20.5, "h": 3.0, "label": "/humanize"
+  },
+  {
+   "type": "sohbet", "start": 17.1, "dur": 7.8,
+   "prompt": "Bu ayki harcamalarımı göster",
+   "cmd": "/dashboard",
+   "reply": "Harcamaları yapıştır; tek panelde grafiğini görürsün."
+  },
+  {
+   "type": "panel", "start": 17.1, "dur": 7.8, "kind": "dashboard", "baslik": "2. KOMUT  ·  /dashboard"
+  },
+  {
+   "type": "spotlight", "start": 19.8, "dur": 1.8, "x": 10.5, "y": 55.6, "w": 79, "h": 36.4
+  },
+  {
+   "type": "sohbet", "start": 25.0, "dur": 8.3,
+   "prompt": "Faiz enflasyonu nasıl düşüşür?",
+   "cmd": "/study",
+   "reply": "Seviyeni sorar, adım adım anlatır, sonra test eder."
+  },
+  {
+   "type": "panel", "start": 25.0, "dur": 8.3, "kind": "study", "baslik": "3. KOMUT  ·  /study"
+  },
+  {
+   "type": "marker", "start": 28.2, "dur": 1.8, "x": 17.5, "y": 66.9, "w": 28, "h": 2.6
+  },
+  {
+   "type": "logo", "start": 28.6, "dur": 4.0, "file": "yp-chatgpt.svg", "pos": "sag-ust"
+  },
+  {
+   "type": "sohbet", "start": 33.4, "dur": 11.6,
+   "prompt": "Bunu 5 yaşındaki bir çocuğa anlat",
+   "cmd": "/el5",
+   "reply": "Seviyeni yaz; anlatımı o yaş seviyesine indirir."
+  },
+  {
+   "type": "panel", "start": 33.4, "dur": 11.6, "kind": "el5", "baslik": "4. KOMUT  ·  /el5"
+  },
+  {
+   "type": "counter", "start": 34.6, "dur": 1.9, "to": 5, "suffix": " yaş", "label": "çocuk seviyesinde anlatım", "pos": "orta"
+  },
+  {
+   "type": "arrow", "start": 36.6, "dur": 1.8, "x": 31.5, "y": 63.9, "from": "ust"
+  },
+  {
+   "type": "sohbet", "start": 45.1, "dur": 7.7,
+   "prompt": "Bugünün güncel fiyatı ne?",
+   "cmd": "/torch",
+   "reply": "Eski veri yerine güncel veriyi getirir."
+  },
+  {
+   "type": "panel", "start": 45.1, "dur": 7.7, "kind": "torch", "baslik": "5. KOMUT  ·  /torch"
+  },
+  {
+   "type": "frame", "start": 47.9, "dur": 1.8, "x": 16.5, "y": 64.8, "w": 22.5, "h": 3.2, "label": "güncel veri"
+  },
+  {
+   "type": "cta", "start": 52.8, "dur": 5.7,
+   "cTo": 5, "cSuffix": " komut", "cLabel": "bugün öğrendiğin kısayollar",
+   "subscribe": "Kanalı takip et", "note": "Bilmeyen arkadaşına gönder"
+  },
+  {
+   "type": "progress", "start": 0, "dur": 58.5
+  }
+ ]
+}
