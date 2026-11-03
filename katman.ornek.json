@@ -1,0 +1,5 @@
+{"width":1280,"height":720,"fps":30,"duration":6,
+ "theme":{"primary":"#ff7a59","secondary":"#fff1e3","accent":"#e11d48","style":"blok"},
+ "events":[{"type":"counter","start":0.3,"dur":2.6,"to":3000,"suffix":" abone","label":"15 videoda"},
+ {"type":"frame","start":3.2,"dur":2.5,"x":55,"y":20,"w":30,"h":25,"label":"Buraya bak"},
+ {"type":"text","start":3.4,"dur":2.4,"text":"Dikkat","tone":"uyari","pos":"alt"}]}

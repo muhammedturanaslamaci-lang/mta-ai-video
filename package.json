@@ -1,0 +1,22 @@
+{
+  "name": "video-edit-workflow",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Claude Code ile video edit akisi: skill, Remotion katman sablonu, brief formu",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "tip": "tsc --noEmit",
+    "katman": "remotion render src/index.ts Overlay out/katman.webm --props=katman.json --codec=vp8 --pixel-format=yuva420p --image-format=png",
+    "form": "node server.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.540",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.540"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "typescript": "5.6.3"
+  }
+}

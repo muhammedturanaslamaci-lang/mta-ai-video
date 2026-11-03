@@ -1,0 +1,1183 @@
+<!doctype html>
+<html lang="tr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edit Brief Formu</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #0e1014;
+  --bg2: #151820;
+  --panel: #171a21;
+  --panel2: #1f232c;
+  --line: #2b303b;
+  --fg: #eef0f4;
+  --muted: #98a0ae;
+  --accent: #6aa6ff;
+  --accent-text: #8dbcff;
+  --accent-soft: rgba(106, 166, 255, .14);
+  --ink: #08111f;
+  --ok: #5ed39a;
+  --f-display: "Archivo", "Arial Narrow", Arial, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f3f4f8; --bg2: #e9ebf1; --panel: #ffffff; --panel2: #f0f2f7; --line: #d9dce5; --fg: #171a21; --muted: #626a79;
+    --accent: #2f6fe0; --accent-text: #1f55b8; --accent-soft: rgba(47, 111, 224, .1); --ink: #ffffff; --ok: #1f9d68;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f3f4f8; --bg2: #e9ebf1; --panel: #ffffff; --panel2: #f0f2f7; --line: #d9dce5; --fg: #171a21; --muted: #626a79;
+  --accent: #2f6fe0; --accent-text: #1f55b8; --accent-soft: rgba(47, 111, 224, .1); --ink: #ffffff; --ok: #1f9d68;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: var(--bg);
+  background-image: radial-gradient(900px 420px at 8% -8%, var(--accent-soft), transparent 70%);
+  background-repeat: no-repeat;
+  color: var(--fg);
+  font-family: var(--f-body);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1240px; margin: 0 auto; }
+
+header { margin-bottom: 34px; }
+.kicker { font-family: var(--f-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-text); }
+h1 { font-family: var(--f-display); font-weight: 800; font-size: clamp(32px, 5.4vw, 56px); line-height: 1.02; margin: 10px 0 14px; letter-spacing: -.02em; text-wrap: balance; max-width: 18ch; }
+header > p { max-width: 58ch; color: var(--muted); margin: 0 0 22px; font-size: 16px; }
+.flow { display: flex; flex-wrap: wrap; gap: 10px; padding: 0; margin: 0; list-style: none; }
+.flow li { display: flex; align-items: center; gap: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 7px 16px 7px 8px; font-size: 14px; }
+.flow b { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: var(--ink); font-family: var(--f-mono); font-size: 12px; }
+
+.grid { display: grid; gap: 32px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 1020px) { .grid { grid-template-columns: minmax(0, 1fr) minmax(0, 440px); align-items: start; } }
+
+.form { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+fieldset.sec { border: 1px solid var(--line); background: var(--panel); border-radius: 16px; padding: 24px; margin: 0; min-width: 0; }
+.sec legend { padding: 0; float: left; width: 100%; margin-bottom: 18px; display: flex; align-items: center; gap: 14px; }
+.sec legend + * { clear: both; }
+.num { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--accent-soft); color: var(--accent-text); font-family: var(--f-mono); font-size: 14px; font-weight: 500; flex: none; }
+.sec h2 { font-family: var(--f-display); font-weight: 700; font-size: 22px; margin: 0; letter-spacing: -.01em; }
+.row { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin-bottom: 18px; }
+.row:last-child { margin-bottom: 0; }
+.field { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.stack > * + * { margin-top: 18px; }
+.lab { font-size: 13px; font-weight: 600; letter-spacing: .01em; }
+.hint { font-size: 12.5px; color: var(--muted); }
+.hint a { color: var(--accent-text); }
+input[type=text], input[type=number], select, textarea {
+  width: 100%; background: var(--panel2); color: var(--fg); border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 12px; font: inherit; min-width: 0;
+}
+input[type=file] { width: 100%; font: inherit; font-size: 13px; color: var(--muted); min-width: 0; }
+input[type=file]::file-selector-button { background: var(--panel2); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; margin-right: 10px; font: inherit; font-size: 13px; cursor: pointer; }
+textarea { resize: vertical; }
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible, label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+input[type=radio], input[type=checkbox], input[type=range] { accent-color: var(--accent); }
+
+.opts { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); }
+.opt { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; background: var(--panel2); border: 1px solid var(--line); border-radius: 12px; cursor: pointer; min-width: 0; }
+.opt input { margin-top: 3px; flex: none; }
+.opt:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.opt small { display: block; color: var(--muted); font-size: 12px; line-height: 1.4; margin-top: 1px; }
+
+.fmts { display: grid; gap: 12px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.fmt { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 8px; padding: 16px 8px 12px; background: var(--panel2); border: 1px solid var(--line); border-radius: 12px; cursor: pointer; min-height: 124px; text-align: center; }
+.fmt input { position: absolute; opacity: 0; pointer-events: none; }
+.fmt:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.fmt:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.fmt:has(input:checked) .shape { border-color: var(--accent); background: var(--accent-soft); }
+.shape { border: 2px solid var(--muted); border-radius: 4px; }
+.shape.v { width: 34px; aspect-ratio: 9 / 16; }
+.shape.h { width: 66px; aspect-ratio: 16 / 9; }
+.shape.s { width: 46px; aspect-ratio: 1 / 1; }
+.fmt b { font-family: var(--f-mono); font-weight: 500; font-size: 14px; }
+.fmt small { color: var(--muted); font-size: 12px; }
+
+.pals { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.pal { position: relative; display: flex; flex-direction: column; gap: 9px; padding: 10px; background: var(--panel2); border: 1px solid var(--line); border-radius: 12px; cursor: pointer; min-width: 0; }
+.pal input { position: absolute; opacity: 0; pointer-events: none; }
+.pal:has(input:checked) { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.pal:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sw { display: flex; height: 30px; border-radius: 7px; overflow: hidden; border: 1px solid var(--line); }
+.sw i { flex: 1; }
+.pal span { font-size: 13px; }
+.colors { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: 12px; }
+.colors label { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+input[type=color] { width: 42px; height: 34px; padding: 2px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel2); }
+
+.styles { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+.sty { position: relative; display: flex; flex-direction: column; gap: 10px; padding: 10px; background: var(--panel2); border: 1px solid var(--line); border-radius: 12px; cursor: pointer; min-width: 0; }
+.sty input { position: absolute; opacity: 0; pointer-events: none; }
+.sty:has(input:checked) { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.sty:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sty .samp { container-type: inline-size; height: 62px; border-radius: 8px; background: linear-gradient(135deg, #2a3140, #151a24); display: grid; place-items: center; overflow: hidden; }
+.sty .samp > div { font-size: 8cqw; line-height: 1.1; white-space: nowrap; font-family: var(--f-body); }
+.sty b { font-size: 13px; font-weight: 600; }
+.sty small { color: var(--muted); font-size: 12px; display: block; }
+
+.range { display: flex; align-items: center; gap: 14px; }
+.range input { flex: 1; min-width: 0; }
+.range output { font-family: var(--f-mono); font-size: 13px; min-width: 9ch; color: var(--accent-text); text-align: right; }
+
+.fxs { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.fxo { display: flex; gap: 6px; align-items: stretch; min-width: 0; }
+.fxo .opt { flex: 1; align-items: center; }
+.pv { flex: none; width: 44px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel2); color: var(--accent-text); cursor: pointer; font-size: 14px; }
+.pv:hover { border-color: var(--accent); background: var(--accent-soft); }
+
+.mats { display: grid; gap: 0; }
+.mat { display: grid; gap: 8px; padding: 14px 0; border-bottom: 1px dashed var(--line); }
+.mat:last-child { border-bottom: 0; }
+.mat-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(160px, 230px); gap: 14px; align-items: center; }
+.mat b { display: block; font-weight: 600; font-size: 14px; }
+.mat small { color: var(--muted); font-size: 12.5px; }
+.mat code, .hint code { font-family: var(--f-mono); font-size: 12px; background: var(--panel2); padding: 1px 6px; border-radius: 5px; }
+.fnames { font-family: var(--f-mono); font-size: 12px; color: var(--accent-text); margin-top: 4px; overflow-wrap: anywhere; }
+@media (max-width: 520px) { .mat-head { grid-template-columns: minmax(0, 1fr); gap: 8px; } }
+
+/* sağ panel */
+.out { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+@media (min-width: 1020px) { .out { position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow-y: auto; padding: 2px; } }
+.card { border: 1px solid var(--line); background: var(--panel); border-radius: 16px; padding: 18px; min-width: 0; }
+.card h3 { font-family: var(--f-display); font-weight: 700; font-size: 18px; margin: 0 0 4px; letter-spacing: -.01em; }
+.card > p { margin: 0 0 12px; color: var(--muted); font-size: 13px; }
+.card textarea { font-family: var(--f-mono); font-size: 12px; line-height: 1.5; height: 260px; }
+.card textarea.small { height: 150px; }
+.card textarea.line { height: 74px; }
+.btn { margin-top: 10px; width: 100%; background: var(--accent); color: var(--ink); border: 0; border-radius: 10px; padding: 12px 14px; font: inherit; font-weight: 700; cursor: pointer; }
+.btn:hover { filter: brightness(1.07); }
+.btn:disabled { opacity: .5; cursor: default; }
+.btn.alt { background: transparent; color: var(--fg); border: 1px solid var(--line); }
+.status { font-family: var(--f-mono); font-size: 12px; color: var(--accent-text); min-height: 18px; margin-top: 8px; overflow-wrap: anywhere; }
+.status.ok { color: var(--ok); }
+details.more { border: 1px solid var(--line); border-radius: 16px; background: var(--panel); padding: 14px 18px; }
+details.more summary { cursor: pointer; font-weight: 600; font-size: 14px; }
+details.more[open] summary { margin-bottom: 14px; }
+details.more h4 { margin: 14px 0 6px; font-size: 13px; }
+
+.prbtns { display: flex; gap: 8px; margin-top: 8px; }
+.prbtns .btn { flex: 1; }
+.fxg { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 18px 0 8px; }
+.fxg:first-child { margin-top: 0; }
+/* ön izleme */
+.stage { position: relative; container-type: inline-size; width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: #0b0d11; border: 1px solid var(--line); margin-inline: auto; }
+.stage.v { aspect-ratio: 9 / 16; max-width: 220px; }
+.stage.s { aspect-ratio: 1 / 1; max-width: 320px; }
+.mock { position: absolute; inset: 0; background: linear-gradient(160deg, #1b2230, #121722); font-family: var(--f-body); color: #cfd6e4; }
+.mock .bar { position: absolute; left: 0; right: 0; top: 0; height: 7%; background: #232b3b; display: flex; align-items: center; gap: 1.2cqw; padding-left: 2.4cqw; }
+.mock .bar i { width: 1.6cqw; height: 1.6cqw; border-radius: 50%; background: #4a5469; }
+.mock .side { position: absolute; left: 0; top: 7%; bottom: 0; width: 7%; background: #181e2b; }
+.mock .ln { position: absolute; height: 1.4cqw; border-radius: 1cqw; background: #2b3447; }
+.mock .tg { position: absolute; left: 12%; top: 22%; width: 52%; height: 38%; border-radius: 1.2cqw; background: #202838; border: .2cqw solid #2f3a50; padding: 2cqw 2.4cqw; }
+.mock .tg .t1 { font-size: 3cqw; color: #9aa6bd; }
+  .mock .tg .t2 { position: relative; font-size: 7cqw; font-weight: 800; color: #eaf0ff; line-height: 1.1; margin-top: .6cqw; font-variant-numeric: tabular-nums; }
+.mock .tg .bars { position: absolute; left: 2.4cqw; right: 2.4cqw; bottom: 2cqw; height: 28%; display: flex; align-items: flex-end; gap: 1.2cqw; }
+.mock .tg .bars i { flex: 1; background: #3b4c6e; border-radius: .6cqw .6cqw 0 0; }
+.mock .pii { position: absolute; left: 12%; top: 66%; font-size: 3cqw; color: #aab4c8; font-family: var(--f-mono); }
+.mock .tr { position: absolute; left: 12%; top: 74%; font-size: 3cqw; color: #aab4c8; }
+.cam { position: absolute; right: 3%; bottom: 4%; width: 17%; aspect-ratio: 4 / 3; border-radius: 1.4cqw; background: linear-gradient(160deg, #3a4254, #262c39); border: .2cqw solid #4b5570; display: grid; place-items: center; overflow: hidden; }
+.cam::before { content: ""; width: 34%; aspect-ratio: 1; border-radius: 50%; background: #7d879d; margin-top: -8%; }
+.cam::after { content: ""; position: absolute; bottom: -22%; width: 70%; aspect-ratio: 1.6; border-radius: 50% 50% 0 0; background: #7d879d; }
+.cam.bottom { right: auto; left: 50%; transform: translateX(-50%); width: 20%; }
+.stage.v .cam { width: 26%; }
+.stage.v .mock .tg { width: 76%; left: 12%; }
+.fxlayer { position: absolute; inset: 0; pointer-events: none; font-family: var(--f-body); }
+.fxlayer .pos { position: absolute; display: flex; }
+.fxbar { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.fxbar button { font: inherit; font-size: 12px; background: var(--panel2); color: var(--fg); border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px; cursor: pointer; }
+.fxbar button:hover, .fxbar button.on { border-color: var(--accent); background: var(--accent-soft); }
+.pvmeta { font-family: var(--f-mono); font-size: 11.5px; color: var(--muted); margin-top: 10px; overflow-wrap: anywhere; }
+
+footer { margin-top: 36px; color: var(--muted); font-size: 13px; max-width: 70ch; }
+@media (prefers-reduced-motion: no-preference) { .opt, .fmt, .pal, .sty, .pv { transition: border-color .15s, background .15s; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="kicker">Edit akışı · brief formu</div>
+    <h1>Videonu bir kez anlat, edit'i yapay zeka yapsın</h1>
+    <p>Soruları doldur, efektleri sağdaki ön izlemede dene. Dosyaların otomatik yerleşir, sen sadece tek satırlık komutu yapay zeka aracına yapıştırırsın.</p>
+    <ol class="flow">
+      <li><b>1</b>Formu doldur</li>
+      <li><b>2</b>Komutu yapıştır</li>
+    </ol>
+  </header>
+
+  <div class="grid">
+    <form class="form" id="form" onsubmit="return false" autocomplete="off">
+
+      <fieldset class="sec stack">
+        <legend><span class="num">1</span><h2>Video</h2></legend>
+        <div class="row">
+          <div class="field"><label class="lab" for="name">Video adı</label><input type="text" id="name" value="Video 1"></div>
+          <div class="field"><label class="lab" for="dur">Süre (dakika)</label><input type="number" id="dur" min="1" max="60" step="1" value="15"></div>
+        </div>
+        <div class="field">
+          <label class="lab" for="vfile">Video dosyası</label>
+          <input type="file" id="vfile" accept="video/*">
+          <div class="fnames" id="vname"></div>
+        </div>
+        <div class="field">
+          <span class="lab">Görüntü oranı</span>
+          <div class="fmts">
+            <label class="fmt"><input type="radio" name="fmt" value="9:16 (dikey)"><span class="shape v"></span><b>9:16</b><small>Dikey</small></label>
+            <label class="fmt"><input type="radio" name="fmt" value="16:9 (yatay)" checked><span class="shape h"></span><b>16:9</b><small>Yatay</small></label>
+            <label class="fmt"><input type="radio" name="fmt" value="1:1 (kare)"><span class="shape s"></span><b>1:1</b><small>Kare</small></label>
+          </div>
+        </div>
+        <div class="field">
+          <span class="lab">Video türü</span>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="type" value="Ekran kaydı + yüz kamerası" checked><span>Ekran kaydı + yüz kamerası</span></label>
+            <label class="opt"><input type="radio" name="type" value="Sadece ekran kaydı"><span>Sadece ekran kaydı</span></label>
+            <label class="opt"><input type="radio" name="type" value="Konuşan kafa (sadece kamera)"><span>Konuşan kafa<small>Sadece kamera</small></span></label>
+            <label class="opt"><input type="radio" name="type" value="Sesli anlatım + görsel"><span>Sesli anlatım + görsel</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <label class="lab" for="speed">Video hızı</label>
+          <select id="speed">
+            <option value="Orijinal hızda kalsın">Orijinal hızda kalsın</option>
+            <option value="Sessiz ve boş yerleri hızlandır (konuşma hızı değişmesin)">Sessiz ve boş yerleri hızlandır</option>
+            <option value="Tüm videoyu 1.1x hızlandır">Tüm video 1.1x</option>
+            <option value="Tüm videoyu 1.25x hızlandır">Tüm video 1.25x</option>
+            <option value="Tüm videoyu 1.5x hızlandır">Tüm video 1.5x</option>
+          </select>
+          <span class="hint">Hız değişimi diğer işlerden önce yapılır, efektler yeni zamana göre yerleşir.</span>
+        </div>
+        <div class="field">
+          <span class="lab">Videonun durumu</span>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="raw" value="cut" checked><span>Kendim kestim<small>Kesime dokunulmasın</small></span></label>
+            <label class="opt"><input type="radio" name="raw" value="raw"><span>Ham video<small>Hatalı ve gereksiz yerler kesilsin</small></span></label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="sec stack">
+        <legend><span class="num">2</span><h2>Yüz kamerası</h2></legend>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="cam" value="auto" checked><span>Otomatik tespit et<small>Kareleri inceler, kameranın yerini ve boyutunu bulur</small></span></label>
+          <label class="opt"><input type="radio" name="cam" value="none"><span>Yüz kamerası yok</span></label>
+          <label class="opt"><input type="radio" name="cam" value="corner"><span>Sağ altta, orijinal yerinde<small>Büyütme ve taşıma yok</small></span></label>
+          <label class="opt"><input type="radio" name="cam" value="bottom"><span>Ekranın altında küçük<small>Dikey videolar için</small></span></label>
+        </div>
+        <div class="field" id="camWhenWrap">
+          <label class="lab" for="camWhen">Yüzün görüneceği yerler</label>
+          <select id="camWhen">
+            <option value="hep">Hep görünsün</option>
+            <option value="giris-cta">Girişte ve sondaki çağrıda (CTA) görünsün</option>
+            <option value="giris">Sadece girişte görünsün</option>
+            <option value="cta">Sadece sondaki çağrıda (CTA) görünsün</option>
+            <option value="hic">Hiç görünmesin</option>
+          </select>
+          <span class="hint">Görünmeyen yerlerde kamera alanı edit görselleriyle veya tam ekran sahneyle örtülür. Dikey videolarda girişte ve sondaki çağrıda görünmek iyi çalışır.</span>
+        </div>
+      </fieldset>
+
+      <fieldset class="sec stack">
+        <legend><span class="num">3</span><h2>Renk, yazı ve tasarım</h2></legend>
+        <div class="field">
+          <span class="lab">Renk paleti</span>
+          <div class="pals" id="pals"></div>
+          <div class="colors">
+            <label>Ana <input type="color" id="c1" value="#ffffff"></label>
+            <label>İkinci <input type="color" id="c2" value="#7cc4ff"></label>
+            <label>Vurgu <input type="color" id="c3" value="#ff5c5c"></label>
+          </div>
+          <span class="hint">Vurgu rengi sadece altı çizilecek uyarı ve tehlike anlarında kullanılır. Renkleri elle değiştirirsen palet "özel" olur.</span>
+        </div>
+        <div class="field">
+          <span class="lab">Tasarım stili</span>
+          <div class="styles" id="styles"></div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label class="lab" for="bg">Ek arka plan</label>
+            <select id="bg">
+              <option value="Videonun kendisi, ek arka plan yok">Videonun kendisi, ek arka plan yok</option>
+              <option value="Koyu düz arka plan">Koyu düz arka plan</option>
+              <option value="Açık düz arka plan">Açık düz arka plan</option>
+              <option value="Şeffaf katman, yazılar videonun üstüne biner">Şeffaf katman</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="lab" for="sub">Altyazı</label>
+            <select id="sub">
+              <option value="Altyazı yok">Yok</option>
+              <option value="Sadece vurgulanan kelimeler">Sadece vurgulanan kelimeler</option>
+              <option value="Tam altyazı">Tam altyazı</option>
+              <option value="Kelime kelime vurgulanan altyazı (karaoke tarzı)">Kelime kelime vurgulu (karaoke)</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label class="lab" for="subpos">Altyazı konumu</label>
+            <select id="subpos"><option value="altta">Altta</option><option value="ortada">Ortada</option><option value="üstte">Üstte</option></select>
+          </div>
+          <div class="field">
+            <label class="lab" for="emoji">Emoji ve ikon</label>
+            <select id="emoji"><option value="Emoji kullanma, ikon az olsun">Emoji yok, ikon az</option><option value="İkon ve emoji serbest">Serbest</option></select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="sec stack">
+        <legend><span class="num">4</span><h2>Animasyon, efekt ve ses</h2></legend>
+        <div class="field">
+          <span class="lab">Yoğunluk</span>
+          <div class="range"><input type="range" id="dens" min="1" max="5" step="1" value="3" aria-label="Efekt yoğunluğu"><output id="densOut">Dengeli</output></div>
+          <span class="hint">Ekran uzun süre durağansa yoğunluğu artırabilirsin.</span>
+        </div>
+        <div class="field">
+          <span class="lab">Giriş kancası</span>
+          <div class="opts" role="radiogroup" aria-label="Giriş kancası">
+            <label class="opt"><input type="radio" name="hook" value="ai" checked><span>Yapay zeka oluştursun<small>Konuşmadan en vurucu cümleyi bulur</small></span></label>
+            <label class="opt"><input type="radio" name="hook" value="ben"><span>Ben yazacağım<small>Kendi cümlen ekrana gelir</small></span></label>
+            <label class="opt"><input type="radio" name="hook" value="yok"><span>Kanca olmasın</span></label>
+          </div>
+          <div id="hookBox" hidden>
+            <label class="lab" for="hookText">Kanca cümlen</label>
+            <input type="text" id="hookText" maxlength="90" placeholder="Örnek: 15 videoda 3 bin abone nasıl geldi?">
+          </div>
+          <span class="hint">Videonun ilk saniyelerinde ekrana gelen kısa vurucu cümle. Yapay zeka seçersen videoyu dinleyip kendisi yazar ve seçtiğin stile göre gösterir.</span>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label class="lab" for="zoom">En fazla yakınlaştırma sayısı</label>
+            <input type="number" id="zoom" min="0" max="30" value="6">
+            <span class="hint">Süreye göre otomatik hesaplanır. Elle değiştirebilirsin.</span>
+          </div>
+          <div class="field">
+            <span class="lab">Ses efekti</span>
+            <div class="opts" style="grid-template-columns:1fr">
+              <label class="opt"><input type="radio" name="sfx" value="Ses efekti yok"><span>Yok</span></label>
+              <label class="opt"><input type="radio" name="sfx" value="Az, kısık, sadece gereken yerde; her seferinde farklı ses" checked><span>Az ve kısık</span></label>
+              <label class="opt"><input type="radio" name="sfx" value="Orta düzeyde, çeşitli sesler"><span>Orta</span></label>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <span class="lab">Efektler <span class="hint" style="font-weight:400">· ▶ düğmesi sağdaki ön izlemede oynatır. İşine yarayanları seç.</span></span>
+          <div id="fxs"></div>
+        </div>
+        <div class="field">
+          <span class="lab">Arka plan müziği</span>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="music" value="no" checked><span>Müzik yok</span></label>
+            <label class="opt"><input type="radio" name="music" value="yes"><span>Müzik ekle<small>Dosyayı sen vereceksin</small></span></label>
+          </div>
+          <div id="musicBox" hidden style="margin-top:12px">
+            <div class="field" style="margin-bottom:12px">
+              <label class="lab" for="mfile">Müzik dosyası (MP3 veya WAV)</label>
+              <input type="file" id="mfile" accept="audio/*">
+              <div class="fnames" id="mname"></div>
+            </div>
+            <div class="field">
+              <span class="lab">Konuşmanın altındaki ses seviyesi</span>
+              <div class="range"><input type="range" id="mvol" min="-34" max="-14" step="1" value="-24" aria-label="Müzik ses seviyesi"><output id="mvolOut">-24 dB</output></div>
+            </div>
+            <p class="hint" style="margin:12px 0 0">Müzik videonun uzunluğuna keser, konuşma sırasında otomatik kısar ve sonda yumuşakça bitirir. Müziğin yoksa telifsiz kaynaklardan indirebilirsin:
+              <a href="https://pixabay.com/music/" target="_blank" rel="noopener">Pixabay Music</a>,
+              <a href="https://mixkit.co/free-stock-music/" target="_blank" rel="noopener">Mixkit</a>,
+              <a href="https://studio.youtube.com/channel/UC/music" target="_blank" rel="noopener">YouTube Stüdyo Ses Kitaplığı</a>.
+              İndirdiğin dosyanın lisansını kontrol et.</p>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="sec">
+        <legend><span class="num">5</span><h2>Materyaller</h2></legend>
+        <p class="hint" style="margin:0 0 14px">Her materyal türü için kimin sağlayacağını seç. Sen vereceksen dosyaları buradan seç. Dosyalar tarayıcından dışarı çıkmaz.</p>
+        <div class="mats" id="mats"></div>
+        <div class="field" style="margin-top:16px">
+          <label class="lab" for="notes">Özel notlar</label>
+          <textarea id="notes" rows="3" placeholder="Örnek: 2:10'da kendi sitemin ekran görüntüsünü göster. Logom koyu zeminde okunmuyor."></textarea>
+        </div>
+      </fieldset>
+
+      <fieldset class="sec">
+        <legend><span class="num">6</span><h2>Çalışma şekli</h2></legend>
+        <div class="field" style="margin-bottom:18px">
+          <label class="lab" for="tool">Kullanacağın yapay zeka aracı</label>
+          <select id="tool">
+            <option value="claude">Claude Code</option>
+            <option value="codex">Codex CLI</option>
+            <option value="gemini">Gemini CLI</option>
+            <option value="cursor">Cursor</option>
+            <option value="other">Başka bir araç</option>
+          </select>
+          <span class="hint" id="toolHint"></span>
+        </div>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="where" value="local" checked><span>Doğrudan yapsın<small>Yapay zeka aracı kendi bilgisayarında çalışsın</small></span></label>
+          <label class="opt"><input type="radio" name="where" value="ask"><span>Plan önce görülsün<small>Önce planı yazsın, onayımı beklesin</small></span></label>
+        </div>
+      </fieldset>
+    </form>
+
+    <aside class="out" aria-label="Ön izleme ve çıktı">
+      <section class="card">
+        <h3>Ön izleme</h3>
+        <p>Seçtiğin palet, stil ve oranla efektlerin nasıl görüneceğini dene.</p>
+        <div class="stage" id="stage">
+          <div class="mock" id="mock">
+            <div class="bar"><i></i><i></i><i></i></div>
+            <div class="side"></div>
+            <div class="ln" style="left:12%;top:12%;width:30%"></div>
+            <div class="tg" id="tg">
+              <div class="t1">Aylık gelir</div>
+              <div class="t2">2.984</div>
+              <div class="bars"><i style="height:35%"></i><i style="height:55%"></i><i style="height:45%"></i><i style="height:75%"></i><i style="height:60%"></i><i style="height:95%"></i></div>
+            </div>
+            <div class="pii" id="pii">omer@sirket.com</div>
+            <div class="tr" id="tr">Monthly revenue grew</div>
+            <div class="ln" style="left:70%;top:24%;width:24%"></div>
+            <div class="ln" style="left:70%;top:30%;width:18%"></div>
+            <div class="ln" style="left:70%;top:36%;width:22%"></div>
+          </div>
+          <div class="cam" id="stageCam"></div>
+          <div class="fxlayer" id="fxlayer"></div>
+        </div>
+        <div class="fxbar" id="fxbar"></div>
+        <div class="pvmeta" id="pvmeta"></div>
+      </section>
+
+      <section class="card">
+        <h3>Ayarlarım</h3>
+        <p>Renk, stil, efekt ve ses seçimlerini adlandırıp kaydet. Sonraki videoda tek tıkla yükle. Video adı, dosyalar ve notlar kaydedilmez.</p>
+        <div class="field"><label class="lab" for="prSel">Kayıtlı ayarlar</label>
+          <select id="prSel"><option value="">Henüz kayıt yok</option></select></div>
+        <div class="prbtns"><button type="button" class="btn alt" id="prLoad">Yükle</button><button type="button" class="btn alt" id="prDel">Sil</button></div>
+        <div class="field" style="margin-top:12px"><label class="lab" for="prName">Yeni kayıt adı</label>
+          <input type="text" id="prName" maxlength="40" placeholder="Örnek: Teknoloji kanalı stilim"></div>
+        <button type="button" class="btn" id="prSave" style="margin-top:8px">Mevcut seçimleri kaydet</button>
+        <div class="status" id="prStatus" role="status"></div>
+      </section>
+
+      <section class="card">
+        <h3>Dosya durumu</h3>
+        <p id="fsHelp">Dosyaların ve brifin otomatik yerleşiyor.</p>
+        <button type="button" class="btn" id="fsBtn" hidden>Proje klasörünü seç ve hazırla</button>
+        <div class="status" id="fsStatus" role="status"></div>
+      </section>
+
+      <section class="card">
+        <h3>Komutu yapıştır</h3>
+        <p id="cmdHelp">Yapay zeka aracına bu tek satırı yapıştır.</p>
+        <textarea id="short" class="line" readonly aria-label="Komut"></textarea>
+        <button type="button" class="btn" data-copy="short">Komutu kopyala</button>
+        <div class="status" id="st-short" role="status"></div>
+      </section>
+
+      <details class="more" id="manual">
+        <summary>Brifin tam metni</summary>
+        <p class="hint" style="margin:0 0 8px">Gerekirse brifi buradan kopyalayıp doğrudan yapay zeka aracına yapıştırabilirsin.</p>
+        <textarea id="prompt" readonly aria-label="Brif metni"></textarea>
+        <button type="button" class="btn alt" data-copy="prompt">Brifi kopyala</button>
+        <div class="status" id="st-prompt" role="status"></div>
+      </details>
+    </aside>
+  </div>
+
+  <footer>Form tarayıcında çalışır. Yazdıkların ve seçtiğin dosyalar hiçbir yere gönderilmez.</footer>
+</div>
+
+<script>
+const PALS = [
+  ['Beyaz ve gök mavisi', '#ffffff', '#7cc4ff', '#ff5c5c'],
+  ['Mercan ve krem', '#ff7a59', '#fff1e3', '#e11d48'],
+  ['Nane ve beyaz', '#5eead4', '#ffffff', '#ff6b6b'],
+  ['Mor ve beyaz', '#b79cff', '#ffffff', '#ff8fab'],
+  ['Turuncu ve siyah', '#ff8a00', '#111111', '#ffffff'],
+  ['Yeşil ve beyaz', '#4ade80', '#ffffff', '#f43f5e'],
+  ['Kırmızı ve beyaz', '#ef4444', '#ffffff', '#38bdf8'],
+  ['Siyah ve beyaz', '#111111', '#ffffff', '#ef4444']
+];
+const STYLES = [
+  ['auto', 'Otomatik seç', 'Her videoda farklı bir stil'],
+  ['cizgi', 'Sade çizgi', 'İnce çerçeve, hafif yazı'],
+  ['blok', 'Kalın blok', 'Dolu kutular, iri yazı'],
+  ['cam', 'Cam', 'Saydam bulanık paneller'],
+  ['editoryal', 'Editoryal', 'Serif başlık, dergi düzeni'],
+  ['terminal', 'Terminal', 'Mono yazı, koyu panel']
+];
+const STYLE_TEXT = {
+  cizgi: 'Sade çizgi: ince çerçeve, küçük ve hafif yazı, bol boşluk',
+  blok: 'Kalın blok: dolu renkli kutular, iri ve kalın yazı',
+  cam: 'Cam: yarı saydam bulanık paneller, yumuşak köşeler',
+  editoryal: 'Editoryal: serif başlık, ince ayırıcı çizgiler, dergi düzeni',
+  terminal: 'Terminal: tek aralıklı yazı, koyu panel, ince kenarlık'
+};
+const FXS = [
+  { key: 'detay', t: 'Detaya yaklaşıp bütüne dön', v: 'Söylenen detaya yaklaş, sonra tekrar bütüne dön', def: 1 },
+  { key: 'altcizgi', t: 'Yakınlaştırıp altını çiz', v: 'Önemli yeri yakınlaştırıp altını çiz', def: 1 },
+  { key: 'cerceve', t: 'Alanı çerçeveye al', v: 'Vurgu için ekrandaki alanı çerçeveye al (zoom yerine)', def: 1 },
+  { key: 'spot', t: 'Spotlight (çevreyi karart)', v: 'Önemli alanı aydınlatıp çevreyi karart (spotlight)', def: 0 },
+  { key: 'isaret', t: 'Fosforlu kalem vurgusu', v: 'Önemli metni fosforlu kalemle işaretle', def: 0 },
+  { key: 'ok', t: 'Ok işareti', v: 'Dikkat çekilecek yeri ok işaretiyle göster', def: 0 },
+  { key: 'imlec', t: 'Tıklama halkası', v: 'Tıklanan yerlerde tıklama halkası ve imleç vurgusu göster', def: 0 },
+  { key: 'sayac', t: 'Rakamlar için yükselen sayaç', v: 'Rakamlar için yükselen sayaç animasyonu', def: 1 },
+  { key: 'grafik', t: 'Büyüyen çubuk grafik', v: 'Karşılaştırmalı rakamları büyüyen çubuk grafikle göster', def: 0 },
+  { key: 'liste', t: 'Sırayla beliren madde listesi', v: 'Sayılan maddeleri sırayla beliren liste olarak göster', def: 0 },
+  { key: 'baslik', t: 'Giriş başlık kartı', v: 'Girişte videonun konusunu gösteren büyük başlık kartı göster', def: 0 },
+  { key: 'altuclu', t: 'İsim ve ünvan bandı', v: 'Konuşanın ismini ve ünvanını alt bantta göster', def: 0 },
+  { key: 'bolum', t: 'Köşede bölüm etiketi', v: 'Köşede bölüm etiketi göster', def: 0 },
+  { key: 'kart', t: 'Bölümler arası bilgi kartı', v: 'Bölümler arasında kısa bilgi kartı', def: 0 },
+  { key: 'oncesonra', t: 'Önce / sonra karşılaştırma', v: 'Önce ve sonra karşılaştırmasını yan yana göster', def: 0 },
+  { key: 'ceviri', t: 'İngilizce metni Türkçeye çevir', v: 'Ekrandaki İngilizce metinleri Türkçeye çevir', def: 1 },
+  { key: 'arama', t: 'Arama anlarında tarayıcı sahnesi', v: "'Google'da aradım' gibi anlarda tarayıcı arama sahnesi", def: 1 },
+  { key: 'haber', t: 'Haber ve post anlarında ekran görüntüsü', v: 'Haber ve sosyal medya anlarında gerçek ekran görüntüsü', def: 1 },
+  { key: 'test', t: 'Test sonuçları pencere görünümünde', v: 'Test sonuçlarını tarayıcı penceresi çerçevesinde göster', def: 0 },
+  { key: 'tus', t: 'Tuş kısayolu göstergesi', v: 'Kısayol anlatılırken tuş kombinasyonunu göster', def: 0 },
+  { key: 'bulanik', t: 'Kişisel bilgileri bulanıklaştır', v: 'Kişisel bilgileri bulanıklaştır (e-posta, başkalarının isimleri)', def: 1 },
+  { key: 'logo', t: 'Marka adı yerine logo', v: 'Marka adı yazma, logosunu göster', def: 1 },
+  { key: 'abone', t: 'Abone ol / takip et çağrısı', v: 'Uygun anda abone ol veya takip et çağrısı göster', def: 0 },
+  { key: 'ilerleme', t: 'Üstte ilerleme çubuğu', v: 'Üstte ince ilerleme çubuğu göster', def: 0 },
+  { key: 'geri', t: 'Geri sayım', v: 'Geri sayım veya zamanlayıcı göster', def: 0 }
+];
+const FXG = [
+  ['Vurgu ve odak', ['detay', 'altcizgi', 'cerceve', 'spot', 'isaret', 'ok', 'imlec']],
+  ['Bilgi ve metin', ['sayac', 'grafik', 'liste', 'baslik', 'altuclu', 'bolum', 'kart', 'oncesonra', 'ceviri']],
+  ['Ekran kaydı', ['arama', 'haber', 'test', 'tus', 'bulanik']],
+  ['Marka ve çağrı', ['logo', 'abone']],
+  ['Süre', ['ilerleme', 'geri']]
+];
+const MATS = [
+  { k: 'logolar', f: 'logolar', t: 'Logolar', d: 'Şeffaf PNG. Dosya adı marka adı olsun: claude.png', def: 'ben', acc: 'image/*' },
+  { k: 'google', f: 'google-aramalar', t: 'Google arama ekran görüntüleri', d: 'Anlattığın aramaların sonuç sayfaları', def: 'sen', acc: 'image/*' },
+  { k: 'uygulama', f: 'uygulama-ekran-goruntuleri', t: 'Mobil ve masaüstü uygulama ekranları', d: 'Uygulamanın kendi ekranı', def: 'ben', acc: 'image/*' },
+  { k: 'web', f: 'web-siteleri', t: 'Web sitesi ekran görüntüleri', d: 'Bahsettiğin sitelerin sayfaları', def: 'sen', acc: 'image/*' },
+  { k: 'haber', f: 'haberler-ve-postlar', t: 'Haber ve sosyal medya postları', d: 'Haber sayfası, X ve Instagram postu', def: 'sen', acc: 'image/*' },
+  { k: 'klip', f: 'ek-klipler', t: 'Ek video klipler (b-roll)', d: 'Araya girecek kısa klipler', def: 'yok', acc: 'video/*' },
+  { k: 'ses', f: 'ses-ve-font', t: 'Ses efekti ve font', d: 'Kendi ses efektlerin ve yazı tipin varsa', def: 'yok', acc: 'audio/*,.ttf,.otf' }
+];
+const OPTS = [['ben', 'Ben veriyorum'], ['sen', 'Sen bul, uğraştırıyorsa atla'], ['yok', 'Gerek yok']];
+const DENS = ['Çok sade', 'Sade', 'Dengeli', 'Dolu', 'Çok dolu'];
+const $ = s => document.querySelector(s);
+const val = n => { const e = document.querySelector('[name="' + n + '"]:checked'); return e ? e.value : ''; };
+const all = n => [...document.querySelectorAll('[name="' + n + '"]:checked')].map(e => e.value);
+const names = inp => inp && inp.files ? [...inp.files].map(f => f.name) : [];
+const psq = s => "'" + String(s).replace(/'/g, "''") + "'";
+
+function slug(s) {
+  return (s || '').toLowerCase().replace(/ı/g, 'i').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'video-1';
+}
+
+/* ---------- renk ve panel stili (Remotion şablonuyla aynı mantık) ---------- */
+function lum(hex) {
+  const h = hex.replace('#', '');
+  const c = [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16) / 255).map(v => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+  return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+}
+const readable = bg => lum(bg) > 0.5 ? '#111111' : '#ffffff';
+const bright = (a, b) => lum(a) >= lum(b) ? a : b;
+function panelCss(t, k) {
+  const u = n => (n * k).toFixed(3) + 'cqw';
+  const br = bright(t.primary, t.secondary);
+  switch (t.style) {
+    case 'cizgi': return 'background:rgba(8,10,14,.55);border:' + u(.25) + ' solid ' + br + ';color:' + br + ';border-radius:' + u(.8) + ';padding:' + u(1.4) + ' ' + u(2.4) + ';';
+    case 'blok': return 'background:' + t.primary + ';color:' + readable(t.primary) + ';border-radius:' + u(.5) + ';padding:' + u(1.6) + ' ' + u(3) + ';font-weight:800;';
+    case 'cam': return 'background:rgba(20,22,28,.4);backdrop-filter:blur(' + u(2) + ');border:' + u(.15) + ' solid rgba(255,255,255,.4);color:' + br + ';text-shadow:0 ' + u(.1) + ' ' + u(.4) + ' rgba(0,0,0,.5);border-radius:' + u(2.4) + ';padding:' + u(1.6) + ' ' + u(2.8) + ';';
+    case 'editoryal': return 'background:' + t.secondary + ';color:' + readable(t.secondary) + ';border-top:' + u(.45) + ' solid ' + t.primary + ';border-bottom:' + u(.12) + ' solid ' + readable(t.secondary) + ';padding:' + u(1.6) + ' ' + u(3) + ';font-family:Georgia,serif;';
+    default: return 'background:rgba(14,16,20,.94);color:' + br + ';border:' + u(.15) + ' solid ' + br + ';border-radius:' + u(.4) + ';padding:' + u(1.4) + ' ' + u(2.4) + ';font-family:Consolas,"IBM Plex Mono",monospace;';
+  }
+}
+
+/* ---------- arayüz üretimi ---------- */
+const palsEl = $('#pals');
+PALS.forEach((p, i) => {
+  const l = document.createElement('label');
+  l.className = 'pal';
+  l.innerHTML = '<input type="radio" name="pal" value="p' + i + '"><div class="sw"><i style="background:' + p[1] + '"></i><i style="background:' + p[2] + '"></i><i style="background:' + p[3] + '"></i></div><span>' + p[0] + '</span>';
+  palsEl.appendChild(l);
+});
+[['auto', 'Otomatik seç'], ['custom', 'Özel']].forEach(x => {
+  const l = document.createElement('label');
+  l.className = 'pal';
+  l.innerHTML = '<input type="radio" name="pal" value="' + x[0] + '"><div class="sw"><i style="background:linear-gradient(90deg,#7cc4ff,#ff7a59,#5eead4,#b79cff)"></i></div><span>' + x[1] + '</span>';
+  palsEl.appendChild(l);
+});
+document.querySelector('[name="pal"][value="auto"]').checked = true;
+
+const stylesEl = $('#styles');
+STYLES.forEach((s, i) => {
+  const l = document.createElement('label');
+  l.className = 'sty';
+  l.innerHTML = '<input type="radio" name="dstyle" value="' + s[0] + '"' + (i === 0 ? ' checked' : '') + '><div class="samp"><div data-sty="' + s[0] + '">Örnek yazı</div></div><div><b>' + s[1] + '</b><small>' + s[2] + '</small></div>';
+  stylesEl.appendChild(l);
+});
+
+const fxsEl = $('#fxs'), fxbar = $('#fxbar');
+FXG.forEach(g => {
+  const h = document.createElement('div'); h.className = 'fxg'; h.textContent = g[0]; fxsEl.appendChild(h);
+  const grid = document.createElement('div'); grid.className = 'fxs'; fxsEl.appendChild(grid);
+  g[1].forEach(k => {
+    const f = FXS.find(x => x.key === k);
+    const d = document.createElement('div');
+    d.className = 'fxo';
+    d.innerHTML = '<label class="opt"><input type="checkbox" name="fx" value="' + f.v.replace(/"/g, '&quot;') + '" data-key="' + f.key + '"' + (f.def ? ' checked' : '') + '><span>' + f.t + '</span></label><button type="button" class="pv" data-play="' + f.key + '" aria-label="' + f.t + ' ön izleme">▶</button>';
+    grid.appendChild(d);
+  });
+});
+const allBtn = document.createElement('button');
+allBtn.type = 'button'; allBtn.id = 'playAll'; allBtn.textContent = 'Seçilenlerin hepsini oynat';
+fxbar.appendChild(allBtn);
+
+const matsEl = $('#mats');
+MATS.forEach(m => {
+  const row = document.createElement('div');
+  row.className = 'mat';
+  row.innerHTML = '<div class="mat-head"><div><b>' + m.t + '</b><small>' + m.d + ' · <code>' + m.f + '/</code></small></div>' +
+    '<select id="mat-' + m.k + '" aria-label="' + m.t + '">' +
+    OPTS.map(o => '<option value="' + o[0] + '"' + (o[0] === m.def ? ' selected' : '') + '>' + o[1] + '</option>').join('') + '</select></div>' +
+    '<div class="files" id="fw-' + m.k + '"><input type="file" id="f-' + m.k + '" multiple accept="' + m.acc + '" aria-label="' + m.t + ' dosyaları"><div class="fnames" id="fn-' + m.k + '"></div></div>';
+  matsEl.appendChild(row);
+});
+
+let zoomTouched = false;
+$('#zoom').addEventListener('input', () => { zoomTouched = true; });
+
+/* ---------- tema ---------- */
+function curTheme(randomize) {
+  const pv = val('pal');
+  let p;
+  if (/^p\d+$/.test(pv)) { const x = PALS[+pv.slice(1)]; p = { primary: x[1], secondary: x[2], accent: x[3], label: x[0] }; }
+  else if (pv === 'custom') p = { primary: $('#c1').value, secondary: $('#c2').value, accent: $('#c3').value, label: 'Özel' };
+  else {
+    const x = PALS[randomize ? Math.floor(Math.random() * PALS.length) : 0];
+    p = { primary: x[1], secondary: x[2], accent: x[3], label: 'Otomatik seçim (örnek: ' + x[0] + ')' };
+  }
+  let sv = val('dstyle'), sl;
+  if (sv === 'auto') {
+    const keys = Object.keys(STYLE_TEXT);
+    sv = keys[randomize ? Math.floor(Math.random() * keys.length) : 3];
+    sl = 'Otomatik seçim (örnek: ' + STYLES.find(s => s[0] === sv)[1] + ')';
+  } else sl = STYLES.find(s => s[0] === sv)[1];
+  return { ...p, style: sv, styleLabel: sl };
+}
+
+function paintSamples() {
+  const t = curTheme(false);
+  document.querySelectorAll('[data-sty]').forEach(el => {
+    const key = el.dataset.sty === 'auto' ? 'cam' : el.dataset.sty;
+    el.style.cssText = panelCss({ ...t, style: key }, 3.2);
+  });
+}
+
+/* ---------- ön izleme ---------- */
+const layer = $('#fxlayer'), mock = $('#mock');
+let timers = [], raf = 0, playing = false;
+function clearFx() {
+  timers.forEach(clearTimeout); timers = []; cancelAnimationFrame(raf);
+  layer.innerHTML = '';
+  mock.querySelectorAll('.ul').forEach(x => x.remove());
+  mock.style.transform = ''; mock.getAnimations().forEach(a => a.cancel());
+  $('#pii').style.filter = ''; $('#pii').getAnimations().forEach(a => a.cancel());
+  $('#tr').textContent = 'Monthly revenue grew';
+  document.querySelectorAll('.fxbar button').forEach(b => b.classList.remove('on'));
+}
+function mount(posStyle, inner, dur) {
+  const w = document.createElement('div');
+  w.className = 'pos'; w.style.cssText = posStyle;
+  w.appendChild(inner); layer.appendChild(w);
+  inner.animate([{ opacity: 0, transform: 'translateY(2cqw) scale(.96)' }, { opacity: 1, transform: 'none' }], { duration: 350, easing: 'ease-out', fill: 'forwards' });
+  timers.push(setTimeout(() => inner.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: 'forwards' }), dur - 300));
+  return w;
+}
+function firstImage() {
+  for (const k of ['haber', 'web', 'google', 'uygulama']) {
+    const f = $('#f-' + k).files && $('#f-' + k).files[0];
+    if (f && f.type.indexOf('image') === 0 && $('#mat-' + k).value === 'ben') return URL.createObjectURL(f);
+  }
+  return '';
+}
+function logoImage() {
+  const f = $('#f-logolar').files && $('#f-logolar').files[0];
+  return f && f.type.indexOf('image') === 0 && $('#mat-logolar').value === 'ben' ? URL.createObjectURL(f) : '';
+}
+const CENTER = 'inset:0;align-items:center;justify-content:center;';
+
+function playOne(key) {
+  const t = curTheme(true);
+  $('#pvmeta').textContent = 'Palet: ' + t.label + ' · Stil: ' + t.styleLabel;
+  const mk = (css, html) => { const d = document.createElement('div'); d.style.cssText = css; d.innerHTML = html; return d; };
+  const P = (extra) => panelCss(t, 1) + 'font-size:3.4cqw;' + (extra || '');
+  const tgCenter = '33% 41%';
+  let dur = 2800;
+  if (key === 'detay' || key === 'altcizgi') {
+    mock.style.transformOrigin = tgCenter;
+    mock.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.75)', offset: .3 }, { transform: 'scale(1.75)', offset: .75 }, { transform: 'scale(1)' }], { duration: 2800, easing: 'ease-in-out' });
+    if (key === 'altcizgi') {
+      const ul = document.createElement('div');
+      ul.className = 'ul';
+      ul.style.cssText = 'position:absolute;left:0;bottom:-.5cqw;height:.7cqw;border-radius:1cqw;background:' + t.accent + ';width:0';
+      mock.querySelector('.t2').appendChild(ul);
+      ul.animate([{ width: '0%', opacity: 1, offset: 0 }, { width: '70%', opacity: 1, offset: .4 }, { width: '70%', opacity: 1, offset: .75 }, { width: '70%', opacity: 0 }], { duration: 2800, fill: 'forwards' });
+    }
+  } else if (key === 'cerceve') {
+    const f = mk('position:absolute;left:12%;top:22%;width:52%;height:38%;border:.5cqw solid ' + t.primary + ';border-radius:1.4cqw;', '<div style="position:absolute;left:0;bottom:-1.6cqw;height:.9cqw;width:100%;background:' + t.accent + ';border-radius:1cqw"></div><div style="position:absolute;left:0;top:-6.4cqw;' + P('padding:.8cqw 2cqw;') + '">Buraya bak</div>');
+    layer.appendChild(f);
+    f.animate([{ opacity: 0, transform: 'scale(1.06)' }, { opacity: 1, transform: 'scale(1)', offset: .15 }, { opacity: 1, offset: .85 }, { opacity: 0 }], { duration: 2800, fill: 'forwards' });
+  } else if (key === 'sayac') {
+    const n = mk(P('text-align:center;'), '<div style="font-size:11cqw;line-height:1;font-weight:800;font-variant-numeric:tabular-nums" id="cnt">0</div><div style="font-size:3.6cqw;margin-top:1cqw;opacity:.9">15 videoda abone</div>');
+    mount(CENTER, n, dur);
+    const t0 = performance.now();
+    const tick = now => {
+      const p = Math.min(1, (now - t0) / 1700), e = 1 - Math.pow(1 - p, 3);
+      const el = n.querySelector('#cnt'); if (el) el.textContent = Math.round(3000 * e).toLocaleString('tr-TR');
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+  } else if (key === 'logo') {
+    const img = logoImage();
+    const l = mk(P('display:flex;align-items:center;gap:2cqw;'), (img ? '<img src="' + img + '" alt="" style="height:9cqw;max-width:20cqw;object-fit:contain">' : '<div style="width:9cqw;height:9cqw;border-radius:2cqw;background:' + t.accent + ';display:grid;place-items:center;font-weight:800;font-size:5cqw;color:' + readable(t.accent) + '">C</div>') + '<span>Claude</span>');
+    mount('top:6%;right:4%;', l, dur);
+  } else if (key === 'arama') {
+    const q = 'yapay zeka video edit';
+    const w = mk('width:62cqw;background:#fff;border-radius:1.4cqw;overflow:hidden;box-shadow:0 2cqw 6cqw rgba(0,0,0,.4);color:#202124;', '<div style="background:#eceff3;padding:1.2cqw 1.8cqw;display:flex;align-items:center;gap:1cqw"><i style="width:1.3cqw;height:1.3cqw;border-radius:50%;background:#ff5f57"></i><i style="width:1.3cqw;height:1.3cqw;border-radius:50%;background:#febc2e"></i><i style="width:1.3cqw;height:1.3cqw;border-radius:50%;background:#28c840"></i><div style="margin-left:1.2cqw;flex:1;background:#fff;border-radius:2cqw;padding:.6cqw 1.6cqw;font-size:2.4cqw;color:#5f6368">google.com</div></div><div style="padding:4cqw 4.4cqw"><div style="border:.2cqw solid #dadce0;border-radius:4cqw;padding:1.6cqw 2.8cqw;font-size:3.6cqw;min-height:7cqw" id="qq"></div></div>');
+    mount(CENTER, w, dur);
+    let i = 0;
+    const iv = setInterval(() => { const el = w.querySelector('#qq'); if (!el) return clearInterval(iv); i++; el.textContent = q.slice(0, i) + (i % 2 ? '|' : ''); if (i >= q.length) clearInterval(iv); }, 70);
+    timers.push(setTimeout(() => clearInterval(iv), dur));
+  } else if (key === 'haber' || key === 'test') {
+    const img = firstImage();
+    const body = img ? '<img src="' + img + '" alt="" style="display:block;width:100%;max-height:34cqw;object-fit:cover">'
+      : '<div style="padding:2.4cqw;display:grid;gap:1.2cqw"><div style="height:2cqw;background:#dfe3ea;border-radius:1cqw;width:80%"></div><div style="height:1.4cqw;background:#e8ebf1;border-radius:1cqw"></div><div style="height:1.4cqw;background:#e8ebf1;border-radius:1cqw;width:90%"></div><div style="height:10cqw;background:#e1e6ef;border-radius:1cqw;margin-top:1cqw"></div></div>';
+    const w = mk('width:50cqw;background:#fff;border-radius:1.4cqw;overflow:hidden;box-shadow:0 2cqw 6cqw rgba(0,0,0,.4);', '<div style="background:#eceff3;padding:1.1cqw 1.6cqw;display:flex;gap:.9cqw"><i style="width:1.2cqw;height:1.2cqw;border-radius:50%;background:#ff5f57"></i><i style="width:1.2cqw;height:1.2cqw;border-radius:50%;background:#febc2e"></i><i style="width:1.2cqw;height:1.2cqw;border-radius:50%;background:#28c840"></i></div>' + body);
+    mount(CENTER, w, dur);
+  } else if (key === 'kart') {
+    const c = mk(P('max-width:64cqw;'), '<div style="font-size:6.4cqw;font-weight:800;line-height:1.1">Bölüm 2</div><div style="font-size:3.6cqw;margin-top:1.2cqw;opacity:.92">Kurallar ve akış</div>');
+    mount(CENTER, c, dur);
+  } else if (key === 'ceviri') {
+    const el = $('#tr');
+    timers.push(setTimeout(() => { el.textContent = 'Aylık gelir arttı'; el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400 }); }, 900));
+    const tag = mk(P('font-size:2.8cqw;padding:.7cqw 1.8cqw;'), 'EN → TR');
+    mount('left:12%;top:68%;', tag, dur);
+  } else if (key === 'baslik') {
+    mount(CENTER, mk(P('text-align:center;max-width:70cqw;'), '<div style="font-size:7.4cqw;font-weight:800;line-height:1.05">Yapay zeka ile video edit</div><div style="font-size:3.4cqw;margin-top:1.2cqw;opacity:.9">15 videoda 3 bin abone</div>'), dur);
+  } else if (key === 'altuclu') {
+    mount('left:5%;bottom:8%;', mk(P(), '<div style="font-size:4.4cqw;font-weight:800;line-height:1.1">Ömer Göçmen</div><div style="font-size:2.8cqw;margin-top:.6cqw;opacity:.9">Yapay zeka içerik üreticisi</div>'), dur);
+  } else if (key === 'liste') {
+    const l = mk(P('max-width:60cqw;'), '');
+    ['Kural dokümanı', 'Akış', 'Materyal klasörü'].forEach((x, i) => {
+      const d = document.createElement('div'); d.style.cssText = 'font-size:3.8cqw;line-height:1.35;opacity:0;'; d.textContent = '• ' + x; l.appendChild(d);
+      timers.push(setTimeout(() => d.animate([{ opacity: 0, transform: 'translateX(2cqw)' }, { opacity: 1, transform: 'none' }], { duration: 300, fill: 'forwards' }), 350 + i * 450));
+    });
+    mount(CENTER, l, dur);
+  } else if (key === 'imlec') {
+    const c = mk('position:absolute;left:18%;top:62%;width:4cqw;', '<svg viewBox="0 0 24 24" width="100%"><path d="M3 2l7 19 3-8 8-3z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg>');
+    const ring = mk('position:absolute;left:33%;top:39%;width:7cqw;height:7cqw;border-radius:50%;border:.5cqw solid ' + t.primary + ';opacity:0;', '');
+    layer.appendChild(c); layer.appendChild(ring);
+    c.animate([{ left: '18%', top: '62%' }, { left: '34%', top: '40%' }], { duration: 1100, easing: 'ease-out', fill: 'forwards' });
+    ring.animate([{ opacity: 0, transform: 'scale(.3)' }, { opacity: 1, transform: 'scale(.9)', offset: .3 }, { opacity: 0, transform: 'scale(1.4)' }], { duration: 800, delay: 1100, fill: 'forwards' });
+  } else if (key === 'tus') {
+    const caps = ['Ctrl', 'Shift', 'P'].map(k => '<span style="background:#2a2d34;color:#fff;border:.15cqw solid #555;border-bottom:.5cqw solid #111;border-radius:.8cqw;padding:.8cqw 1.8cqw;font:700 3.4cqw Consolas,monospace">' + k + '</span>').join('<span style="color:#fff;font-size:3cqw">+</span>');
+    mount('left:0;right:0;bottom:8%;justify-content:center;', mk('display:flex;align-items:center;gap:1cqw;', caps), dur);
+  } else if (key === 'ilerleme') {
+    const bar = mk('position:absolute;left:0;top:0;height:.8cqw;width:0;background:' + t.primary + ';', '');
+    layer.appendChild(bar); bar.animate([{ width: '0%' }, { width: '100%' }], { duration: 2800, fill: 'forwards' });
+  } else if (key === 'oncesonra') {
+    const box = (c, l) => '<div style="position:relative;width:34cqw;aspect-ratio:16/9;border-radius:1cqw;background:' + c + ';box-shadow:0 1.5cqw 4cqw rgba(0,0,0,.4)"><div style="position:absolute;left:1cqw;top:1cqw;' + P('padding:.5cqw 1.2cqw;font-size:2.4cqw;') + '">' + l + '</div></div>';
+    mount(CENTER, mk('display:flex;gap:2cqw;', box('#7a8aa8', 'Önce') + box('#5bbf96', 'Sonra')), dur);
+  } else if (key === 'grafik') {
+    const bars = [3, 5, 4, 8, 6, 10].map(v => '<div style="flex:1;display:flex;align-items:flex-end;height:100%"><div class="gb" style="width:100%;height:' + v * 10 + '%;background:currentColor;opacity:.9;border-radius:.5cqw .5cqw 0 0;transform-origin:bottom;transform:scaleY(0)"></div></div>').join('');
+    const g = mk(P('width:52cqw;'), '<div style="font-size:3.4cqw;font-weight:800;margin-bottom:1.4cqw">Aylık abone</div><div style="display:flex;gap:1.4cqw;height:20cqw">' + bars + '</div>');
+    mount(CENTER, g, dur);
+    g.querySelectorAll('.gb').forEach((b, i) => b.animate([{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], { duration: 600, delay: 350 + i * 120, easing: 'ease-out', fill: 'forwards' }));
+  } else if (key === 'spot') {
+    const sp = mk('position:absolute;left:12%;top:22%;width:52%;height:38%;border-radius:1.2cqw;border:.3cqw solid ' + t.primary + ';box-shadow:0 0 0 200cqw rgba(0,0,0,.7);', '');
+    layer.appendChild(sp); sp.animate([{ opacity: 0 }, { opacity: 1, offset: .12 }, { opacity: 1, offset: .85 }, { opacity: 0 }], { duration: 2800, fill: 'forwards' });
+  } else if (key === 'isaret') {
+    const m = document.createElement('div'); m.className = 'ul';
+    m.style.cssText = 'position:absolute;left:0;top:8%;height:84%;width:70%;background:' + t.accent + ';opacity:.45;border-radius:.6cqw;z-index:-1;transform-origin:left;';
+    const t2 = mock.querySelector('.t2'); t2.style.isolation = 'isolate'; t2.appendChild(m);
+    m.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)', offset: .2 }, { transform: 'scaleX(1)', offset: .85 }, { opacity: 0 }], { duration: 2800, fill: 'forwards' });
+  } else if (key === 'ok') {
+    const a = mk('position:absolute;left:66%;top:34%;display:flex;align-items:center;gap:1cqw;', '<svg viewBox="0 0 120 70" width="9cqw"><path d="M4 26h64V6l48 29-48 29V44H4z" fill="' + bright(t.primary, t.accent) + '" stroke="#111" stroke-width="2" stroke-linejoin="round" transform="rotate(180 60 35)"/></svg><div style="' + P('padding:.6cqw 1.6cqw;font-size:2.8cqw;') + '">Buraya bak</div>');
+    layer.appendChild(a);
+    a.animate([{ opacity: 0, transform: 'translateX(3cqw)' }, { opacity: 1, transform: 'none', offset: .15 }, { opacity: 1, transform: 'translateX(-1.2cqw)', offset: .5 }, { opacity: 1, transform: 'none', offset: .8 }, { opacity: 0 }], { duration: 2800, fill: 'forwards' });
+  } else if (key === 'abone') {
+    const sb = mk(P('font-size:4cqw;font-weight:800;'), '<span style="display:inline-block">Abone ol</span>');
+    mount('left:5%;bottom:8%;', sb, dur);
+    sb.firstChild.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.1)', offset: .3 }, { transform: 'scale(1)', offset: .5 }, { transform: 'scale(1.1)', offset: .8 }, { transform: 'scale(1)' }], { duration: 1800, delay: 500 });
+  } else if (key === 'bolum') {
+    mount('left:4%;top:9%;', mk(P('font-size:2.8cqw;font-weight:700;padding:.8cqw 1.8cqw;'), '2 · Kurallar'), dur);
+  } else if (key === 'geri') {
+    const c = mk(P('font-size:11cqw;font-weight:800;line-height:1;min-width:16cqw;text-align:center;'), '3');
+    mount(CENTER, c, dur);
+    [2, 1].forEach((n, i) => timers.push(setTimeout(() => { c.textContent = n; c.animate([{ transform: 'scale(1.25)' }, { transform: 'scale(1)' }], { duration: 300 }); }, (i + 1) * 900)));
+  } else if (key === 'bulanik') {
+    const el = $('#pii');
+    el.animate([{ filter: 'blur(0)' }, { filter: 'blur(1.4cqw)', offset: .35 }, { filter: 'blur(1.4cqw)', offset: .85 }, { filter: 'blur(0)' }], { duration: 2800, fill: 'forwards' });
+  }
+  const btn = document.querySelector('.fxbar [data-play="' + key + '"]'); if (btn) btn.classList.add('on');
+  return dur;
+}
+function play(key) { clearFx(); playing = false; playOne(key); }
+async function playAll() {
+  clearFx(); playing = true;
+  const keys = all('fx').length ? [...document.querySelectorAll('[name="fx"]:checked')].map(e => e.dataset.key) : [];
+  for (const k of keys) {
+    if (!playing) return;
+    clearFx(); playing = true;
+    const d = playOne(k);
+    await new Promise(r => setTimeout(r, d + 250));
+  }
+  clearFx(); playing = false;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-play]'); if (b) { play(b.dataset.play); return; }
+  if (e.target.closest('#playAll')) playAll();
+});
+
+/* ---------- dosyalar: yerel sunucu varsa otomatik, yoksa Chrome/Edge klasör seçici ---------- */
+const FS_OK = typeof window.showDirectoryPicker === 'function';
+let SERVER = false, touched = false, lastBuild = null;
+const upMap = new Map();
+let syncTimer = 0, syncBusy = false, syncAgain = false, syncedSlug = '', lastBriefSent = '';
+const fsStatus = (txt, ok) => { const st = $('#fsStatus'); st.className = 'status' + (ok ? ' ok' : ''); st.textContent = txt; };
+function updateFsUi() {
+  const btn = $('#fsBtn'), help = $('#fsHelp');
+  btn.hidden = SERVER || !FS_OK;
+  if (SERVER) help.textContent = 'Videon, materyallerin ve brifin proje klasörüne otomatik yerleşiyor. Bir şey yapman gerekmiyor.';
+  else if (FS_OK) help.textContent = 'Formu form.bat ile açarsan dosyalar otomatik yerleşir. Şimdilik düğmeyle proje klasörünü seçebilirsin.';
+  else help.textContent = 'Dosyalar otomatik yerleşemiyor. Formu form.bat ile aç. Olmazsa brifin tam metnini kopyalayıp aracına yapıştır.';
+  $('#short').classList.toggle('line', SERVER || FS_OK);
+  build();
+}
+async function detectServer() {
+  try {
+    const r = await fetch('/api/ping', { headers: { 'X-Form': '1' } });
+    const j = await r.json();
+    SERVER = !!(j && j.ok);
+  } catch (e) { SERVER = false; }
+  updateFsUi();
+}
+async function post(parts, name, data) {
+  const rel = parts.concat(name).join('/');
+  const r = await fetch('/api/save?p=' + encodeURIComponent(rel), { method: 'POST', headers: { 'X-Form': '1' }, body: data });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || !j.ok) throw new Error('sunucu: ' + (j.error || r.status));
+}
+async function mv(from, to) {
+  const r = await fetch('/api/move?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to), { method: 'POST', headers: { 'X-Form': '1' } });
+  if (!r.ok) throw new Error('taşınamadı');
+}
+function scheduleSync(delay) { if (!SERVER || !touched) return; clearTimeout(syncTimer); syncTimer = setTimeout(sync, delay || 700); }
+async function sync() {
+  const b = lastBuild;
+  if (!b || !SERVER || !touched) return;
+  if (syncBusy) { syncAgain = true; return; }
+  syncBusy = true;
+  try {
+    if (syncedSlug && syncedSlug !== b.sl) {
+      const old = syncedSlug;
+      try { await mv(old, b.sl); for (const [k, v] of upMap) if (v === old) upMap.set(k, b.sl); }
+      catch (e) { for (const [k, v] of [...upMap]) if (v === old) upMap.delete(k); }
+      lastBriefSent = '';
+    }
+    syncedSlug = b.sl;
+    for (const j of b.jobs) {
+      const key = j.dir + '|' + j.file.name + '|' + j.file.size + '|' + j.file.lastModified;
+      if (upMap.get(key) === b.sl) continue;
+      fsStatus('Kopyalanıyor: ' + j.file.name, false);
+      await post(['materyaller', b.sl].concat(j.dir.split('/')), j.file.name, j.file);
+      upMap.set(key, b.sl);
+    }
+    if (b.prompt !== lastBriefSent) { await post(['materyaller', b.sl], 'brief.md', b.prompt); lastBriefSent = b.prompt; }
+    const t = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    fsStatus('Yerleşti: ' + b.jobs.length + ' dosya, brif güncel (materyaller/' + b.sl + '/brief.md, ' + t + ')', true);
+  } catch (e) {
+    fsStatus('Yazılamadı (' + (e && e.message ? e.message : 'hata') + '). form.bat penceresi açık mı?', false);
+  } finally {
+    syncBusy = false;
+    if (syncAgain) { syncAgain = false; scheduleSync(100); }
+  }
+}
+async function getDir(root, parts) { let d = root; for (const p of parts) d = await d.getDirectoryHandle(p, { create: true }); return d; }
+async function put(root, parts, name, data) {
+  const d = await getDir(root, parts);
+  const fh = await d.getFileHandle(name, { create: true });
+  const w = await fh.createWritable();
+  if (typeof data === 'string') { await w.write(data); await w.close(); }
+  else await data.stream().pipeTo(w);
+}
+async function prepare() {
+  const b = lastBuild;
+  try {
+    const root = await window.showDirectoryPicker({ mode: 'readwrite' });
+    let looks = false;
+    try { await root.getFileHandle('package.json'); looks = true; } catch (e) {}
+    if (!looks) { fsStatus('Bu klasör proje klasörü gibi görünmüyor (package.json yok). İçinde kur.bat olan klasörü seç.', false); return; }
+    let i = 0;
+    for (const j of b.jobs) { i++; fsStatus('Kopyalanıyor ' + i + '/' + b.jobs.length + ': ' + j.file.name, false); await put(root, ['materyaller', b.sl].concat(j.dir.split('/')), j.file.name, j.file); }
+    await put(root, ['materyaller', b.sl], 'brief.md', b.prompt);
+    fsStatus('Hazır. ' + b.jobs.length + ' dosya kopyalandı, brif yazıldı: materyaller/' + b.sl + '/brief.md.', true);
+  } catch (e) {
+    if (e && e.name === 'AbortError') return;
+    fsStatus('Yazılamadı (' + (e && (e.name || e.message) ? (e.name || e.message) : 'hata') + '). Formu form.bat ile açmayı dene.', false);
+  }
+}
+$('#fsBtn').addEventListener('click', prepare);
+
+/* ---------- ana derleme ---------- */
+function build() {
+  const name = $('#name').value.trim() || 'Video 1';
+  const sl = slug(name);
+  const dur = Math.max(1, +$('#dur').value || 15);
+  if (!zoomTouched) $('#zoom').value = Math.max(1, Math.round(dur * 6 / 15));
+  const zoom = +$('#zoom').value || 0;
+  const fmt = val('fmt'), type = val('type'), raw = val('raw'), cam = val('cam');
+  const dens = +$('#dens').value;
+  $('#densOut').textContent = DENS[dens - 1];
+  const base = 'materyaller/' + sl + '/';
+  const root = base + 'materyal/';
+
+  const pv = val('pal');
+  if (/^p\d+$/.test(pv)) { const p = PALS[+pv.slice(1)]; $('#c1').value = p[1]; $('#c2').value = p[2]; $('#c3').value = p[3]; }
+  const c1 = $('#c1').value, c2 = $('#c2').value, c3 = $('#c3').value;
+  const paletteText = pv === 'auto'
+    ? 'Sen seç. Her video için konuya uygun bir palet belirle. Aynı paleti art arda kullanma. Sarıya kendiliğinden yönelme.'
+    : 'ana ' + c1 + ', ikinci ' + c2 + ', vurgu ' + c3 + '. Vurgu rengi sadece altı çizilecek uyarı ve tehlike anlarında.';
+  const sv = val('dstyle');
+  const styleText = sv === 'auto'
+    ? 'Sen seç. Her video için farklı bir tasarım dili belirle (çizgi, blok, cam, editoryal, terminal gibi). Önceki videoların kalıbını tekrarlama.'
+    : STYLE_TEXT[sv];
+
+  const fx = all('fx');
+  const sfx = val('sfx');
+  const notes = $('#notes').value.trim();
+
+  const music = val('music') === 'yes';
+  $('#musicBox').hidden = !music;
+  $('#hookBox').hidden = val('hook') !== 'ben';
+  const mvol = +$('#mvol').value;
+  $('#mvolOut').textContent = mvol + ' dB';
+  const mfile = music && $('#mfile').files ? $('#mfile').files[0] : null;
+  const mn = mfile ? mfile.name : '';
+  $('#mname').textContent = mn;
+  const vfile = $('#vfile').files ? $('#vfile').files[0] : null;
+  const vn = vfile ? vfile.name : '';
+  $('#vname').textContent = vn;
+  const videoFile = vn || 'video dosyası';
+
+  const lists = {};
+  const matLines = MATS.map(m => {
+    const v = $('#mat-' + m.k).value;
+    $('#fw-' + m.k).hidden = v !== 'ben';
+    const fl = v === 'ben' ? names($('#f-' + m.k)) : [];
+    lists[m.k] = fl;
+    $('#fn-' + m.k).textContent = fl.join(', ');
+    const label = v === 'ben'
+      ? 'Ben vereceğim. Klasör: ' + m.f + '/' + (fl.length ? '. Dosyalar: ' + fl.join(', ') : '')
+      : v === 'sen' ? 'Sen bul. Bulması uzun sürüyorsa atla, bana sorma'
+      : 'Gerek yok';
+    return '- ' + m.t + ': ' + label;
+  });
+
+  $('#camWhenWrap').hidden = cam === 'none';
+  const when = cam === 'none' ? 'hep' : $('#camWhen').value;
+  const WHEN = {
+    'hep': '',
+    'giris-cta': ' Yüz sadece girişte ve sondaki çağrıda (CTA) görünsün. Aradaki kısımlarda kamera alanını edit görselleriyle veya tam ekran sahneyle örtüp sadece görselleri göster.',
+    'giris': ' Yüz sadece girişte görünsün. Sonrasında kamera alanını edit görselleriyle veya tam ekran sahneyle ört.',
+    'cta': ' Yüz sadece sondaki çağrıda (CTA) görünsün. Öncesinde kamera alanını edit görselleriyle veya tam ekran sahneyle ört.',
+    'hic': ' Yüz kamerası videoda hiç görünmesin. Kamera ekran içeriğinden ayrıysa kırp. Gömülüyse alanı sade bir panel veya içerikle tamamen ört.'
+  };
+  const camText = (cam === 'auto'
+    ? 'Yüz kamerasını kendin tespit et. Videodan farklı zamanlarda birkaç kare çıkar, kameranın yerini ve boyutunu belirle. Kamera yoksa bu kuralı yok say. Bulduğun alana yazı, efekt veya yakınlaştırma bindirme. Kamerayı ikileme. Büyütme, taşıma, çerçeve, filtre yok.'
+    : cam === 'none' ? 'Yüz kamerası yok.'
+    : cam === 'corner' ? 'Yüz kamerası sağ altta, orijinal yerinde ve boyutunda kalsın. Büyütme ve taşıma yok. Etrafına kare, halo veya çerçeve ekleme. Filtre veya renk düzeltmesi ekleme.'
+    : 'Yüz kamerası ekranın altında küçük kalsın. Tam ekran büyütme yapma. Etrafına çerçeve ekleme, filtre veya renk düzeltmesi ekleme.') + WHEN[when];
+
+  const musicText = music
+    ? 'Arka plan müziği: ' + (mn ? mn : 'materyal/ses-ve-font/ klasöründeki müzik dosyası') + ' dosyasını videonun uzunluğuna kes, konuşmanın altında ' + mvol + ' dB seviyesinde karıştır. ffmpeg sidechaincompress ile konuşma sırasında otomatik kıs. Sonda 2 saniyelik yumuşak bitiş yap. Dosya bulunamazsa müziği atla ve raporda söyle.'
+    : 'Arka plan müziği yok.';
+
+  const brief = [
+    '## Brief: ' + name,
+    '- Video: ' + videoFile + ' (klasör: ' + base + 'video/)',
+    '- Görüntü oranı: ' + fmt,
+    '- Süre: yaklaşık ' + dur + ' dakika',
+    '- Tür: ' + type,
+    '- Video hızı: ' + $('#speed').value,
+    '- Video durumu: ' + (raw === 'cut' ? 'Kendim kestim, kesime dokunma. Sadece istenen efektleri ekle.' : 'Ham video. Hatalı ve gereksiz yerleri kes. Art arda tekrar edilen cümlelerde sonuncusunu al.'),
+    '- Yüz kamerası: ' + camText,
+    '- Renk paleti: ' + paletteText,
+    '- Tasarım stili: ' + styleText,
+    '- Ek arka plan: ' + $('#bg').value,
+    '- Giriş kancası: ' + (val('hook') === 'yok' ? 'Kanca ekleme.' : val('hook') === 'ben' ? ($('#hookText').value.trim() ? 'Şu cümleyi ilk saniyelerde ekrana getir: "' + $('#hookText').value.trim() + '"' : 'Kendi cümlemi yazacağım ama boş bıraktım. Videodan en vurucu cümleyi sen seç.') : 'Videoyu dinle, konuşmadaki en vurucu cümleyi bul veya kısa bir kanca cümlesi yaz (en fazla 8 kelime). İlk 3 saniyede ekrana getir. Bulduğun cümleyi raporda yaz.'),
+    '- Altyazı: ' + $('#sub').value + ($('#sub').value === 'Altyazı yok' ? '' : ', ' + $('#subpos').value),
+    '- Emoji ve ikon: ' + $('#emoji').value,
+    '- Efekt yoğunluğu: ' + dens + '/5 (' + DENS[dens - 1] + ')',
+    '- Yakınlaştırma: en fazla ' + zoom + ' adet. Gereksiz yakınlaştırma yapma, vurguyu çerçeveyle ver.',
+    '- Ses efekti: ' + sfx,
+    '- ' + musicText,
+    '',
+    '### İstenen efektler',
+    fx.length ? fx.map(x => '- ' + x).join('\n') : '- Ek efekt yok',
+    '',
+    '### Materyaller (klasör: ' + root + ')',
+    matLines.join('\n'),
+    notes ? '\n### Özel notlar\n' + notes : ''
+  ].join('\n').replace(/\n{3,}/g, '\n\n');
+
+  const local = val('where') === 'local';
+  const flow = [
+    '## Akış (sırayla uygula)',
+    '0. Hız: Brifteki hız ayarını önce uygula. Sonraki adımlar yeni zamana göre yapılsın.',
+    '1. Analiz: Videoyu dinle ve konuşmayı yazıya dök. Marka adı, rakam, haber, sosyal medya postu, arama ve "yukarıda/aşağıda" gibi gösterim anlarını işaretle.',
+    '2. Yaratıcı plan: Her an için ne gösterileceğini yaz (logo, ekran görüntüsü, arama sahnesi, sayaç, yakınlaştırma). Planlamadan önce benzer videolara bak. Her videoda aynı görünen kalıplardan kaçın.',
+    '3. Materyal: Brifteki klasörden materyalleri al. "Sen bul" yazılanları bul, uzun sürüyorsa atla. Yabancı dildeki yazıları Türkçeye çevir.',
+    '4. Katman: Efektleri şeffaf arka planlı ayrı katman olarak render et. Konuştuğum an efekt de gelsin, kayma olmasın.',
+    '5. Birleştirme: ffmpeg ile katmanı ana videoyla birleştir' + (music ? ', müziği karıştır' : '') + '. Orijinal videoyu değiştirme, çıktıyı yeni dosya olarak kaydet.',
+    '6. Kontrol: Ses ve efekt senkronunu, yüz kamerasının ikilenmediğini, kişisel bilgilerin bulanık olduğunu ve yazıların okunduğunu kontrol et.',
+    '7. Bitince dosyayı açma. Sadece nerede olduğunu söyle.'
+  ].join('\n');
+
+  const rules = [
+    '## Kurallar',
+    '- ' + (local ? 'Bu işi bilgisayarımda çalışan bu oturumda yap. Bulut adımı kullanma.' : 'Önce planı yaz ve onayımı bekle. Onaydan sonra bilgisayarımda yerel çalış.'),
+    '- Ekran yazıları sade ve profesyonel olsun. Aynı geçişi ve aynı ses efektini tekrar tekrar kullanma.',
+    '- Rakamlar için sayaç efektini ihmal etme.',
+    '- Marka adı konuşmada geçince adı yazma, logosunu göster.',
+    '- Soru sormadan makul varsayımla devam et. Sadece devam edemeyeceğin bir eksik varsa sor.'
+  ].join('\n');
+
+  const TOOLS = {
+    claude: { n: 'Claude Code', cmd: 'claude', note: '' },
+    codex: { n: 'Codex CLI', cmd: 'codex', note: 'Akış Claude Code ile hazırlandı ve onunla denendi. Codex\'te sonuç değişebilir.' },
+    gemini: { n: 'Gemini CLI', cmd: 'gemini', note: 'Akış Claude Code ile hazırlandı ve onunla denendi. Gemini CLI\'da sonuç değişebilir.' },
+    cursor: { n: 'Cursor', cmd: '', note: 'Akış Claude Code ile hazırlandı ve onunla denendi. Cursor\'da ajan modunu aç, sonuç değişebilir.' },
+    other: { n: 'Aracın', cmd: '', note: 'Akış Claude Code ile hazırlandı ve onunla denendi. Aracın dosya okuyup yazabilmeli, komut çalıştırabilmeli ve görsel dosyaları görebilmeli.' }
+  };
+  const tl = TOOLS[$('#tool').value];
+  $('#toolHint').textContent = (tl.cmd ? 'Proje klasöründe terminale şunu yaz: ' + tl.cmd + '. ' : '') + tl.note;
+  $('#cmdHelp').textContent = (tl.cmd ? tl.n + ' içinde' : 'Yapay zeka aracına') + ' bu tek satırı yapıştır.';
+  const prompt = 'Bu videoyu aşağıdaki brife göre edit et. Akış için talimat/video-edit.md dosyasını oku ve uygula.\n\n' + brief + '\n\n' + flow + '\n\n' + rules + '\n';
+  $('#prompt').value = prompt;
+  $('#short').value = 'materyaller/' + sl + '/brief.md dosyasını oku ve talimat/video-edit.md dosyasındaki akışa göre videoyu edit et.' + ($('#tool').value === 'claude' ? ' video-edit skill\'ini kullan.' : '');
+
+  const jobs = [];
+  if (vfile) jobs.push({ dir: 'video', file: vfile });
+  MATS.forEach(m => { if ($('#mat-' + m.k).value === 'ben') [...$('#f-' + m.k).files].forEach(f => jobs.push({ dir: 'materyal/' + m.f, file: f })); });
+  if (mfile) jobs.push({ dir: 'materyal/ses-ve-font', file: mfile });
+  lastBuild = { sl, prompt, jobs };
+  if (!SERVER && !FS_OK) $('#short').value = prompt;
+  scheduleSync();
+
+  // ön izleme ayarları
+  const vertical = fmt.indexOf('9:16') === 0, square = fmt.indexOf('1:1') === 0;
+  const stage = $('#stage');
+  stage.className = 'stage' + (vertical ? ' v' : square ? ' s' : '');
+  const camEl = $('#stageCam');
+  camEl.hidden = cam === 'none' || when === 'hic';
+  camEl.className = 'cam' + (cam === 'bottom' ? ' bottom' : '');
+  paintSamples();
+  if (!playing && !layer.children.length) $('#pvmeta').textContent = 'Palet: ' + curTheme(false).label + ' · Stil: ' + curTheme(false).styleLabel;
+}
+
+document.addEventListener('input', e => {
+  touched = true;
+  if (e.target.id === 'c1' || e.target.id === 'c2' || e.target.id === 'c3') document.querySelector('[name="pal"][value="custom"]').checked = true;
+  build();
+});
+document.addEventListener('change', () => { touched = true; build(); });
+
+document.querySelectorAll('[data-copy]').forEach(btn => btn.addEventListener('click', async () => {
+  const id = btn.dataset.copy, ta = document.getElementById(id), st = document.getElementById('st-' + id);
+  try { await navigator.clipboard.writeText(ta.value); st.textContent = 'Kopyalandı'; }
+  catch (e) { ta.focus(); ta.select(); st.textContent = 'Metin seçildi, Ctrl+C ile kopyala'; }
+  setTimeout(() => { st.textContent = ''; }, 3000);
+}));
+
+/* ---------- kayıtlı ayarlar ---------- */
+const PR_SKIP = new Set(['name', 'dur', 'notes', 'hookText', 'prName', 'prSel', 'prompt', 'short']);
+let presets = {};
+const prMsg = (t, ok) => { const e = $('#prStatus'); e.className = 'status' + (ok ? ' ok' : ''); e.textContent = t; };
+function collectSettings() {
+  const o = {};
+  document.querySelectorAll('input,select,textarea').forEach(el => {
+    if (el.type === 'file' || el.type === 'button' || el.readOnly) return;
+    if (el.type === 'radio') { if (el.checked) o['r:' + el.name] = el.value; return; }
+    if (el.type === 'checkbox') { o['c:' + el.name + '|' + el.value] = el.checked; return; }
+    if (!el.id || PR_SKIP.has(el.id)) return;
+    o['v:' + el.id] = el.value;
+  });
+  return o;
+}
+function applySettings(o) {
+  document.querySelectorAll('input,select,textarea').forEach(el => {
+    if (el.type === 'file' || el.type === 'button' || el.readOnly) return;
+    if (el.type === 'radio') { const k = 'r:' + el.name; if (k in o) el.checked = o[k] === el.value; return; }
+    if (el.type === 'checkbox') { const k = 'c:' + el.name + '|' + el.value; if (k in o) el.checked = !!o[k]; return; }
+    if (!el.id || PR_SKIP.has(el.id)) return;
+    const k = 'v:' + el.id; if (k in o) el.value = o[k];
+  });
+  touched = true;
+  build();
+}
+function fillPresetList(sel) {
+  const names = Object.keys(presets), box = $('#prSel');
+  box.innerHTML = '';
+  if (!names.length) { const op = document.createElement('option'); op.value = ''; op.textContent = 'Henüz kayıt yok'; box.appendChild(op); return; }
+  names.forEach(n => { const op = document.createElement('option'); op.value = n; op.textContent = n; box.appendChild(op); });
+  if (sel && presets[sel]) box.value = sel;
+}
+async function readPresets() {
+  if (SERVER) {
+    try { const r = await fetch('/api/ayar', { headers: { 'X-Form': '1' } }); const j = await r.json(); return (j && j.ayar) || {}; } catch (e) { return {}; }
+  }
+  try { return JSON.parse(localStorage.getItem('editFormAyarlar') || '{}') || {}; } catch (e) { return {}; }
+}
+async function writePresets() {
+  if (SERVER) {
+    const r = await fetch('/api/ayar', { method: 'POST', headers: { 'X-Form': '1' }, body: JSON.stringify(presets) });
+    if (!r.ok) throw new Error('sunucu');
+    return 'Proje klasöründeki ayarlar/stiller.json dosyasına kaydedildi.';
+  }
+  try { localStorage.setItem('editFormAyarlar', JSON.stringify(presets)); return 'Bu tarayıcıya kaydedildi. Kalıcı olması için formu form.bat ile aç.'; }
+  catch (e) { throw new Error('tarayıcı kayda izin vermiyor'); }
+}
+async function loadPresets(sel) { presets = await readPresets(); fillPresetList(sel); }
+$('#prSave').addEventListener('click', async () => {
+  const n = $('#prName').value.trim();
+  if (!n) { prMsg('Önce bir ad yaz.', false); return; }
+  presets[n] = collectSettings();
+  try { const m = await writePresets(); fillPresetList(n); $('#prName').value = ''; prMsg('"' + n + '" kaydedildi. ' + m, true); }
+  catch (e) { prMsg('Kaydedilemedi: ' + e.message, false); }
+});
+$('#prLoad').addEventListener('click', () => {
+  const n = $('#prSel').value;
+  if (!n || !presets[n]) { prMsg('Yüklenecek kayıt yok.', false); return; }
+  applySettings(presets[n]); prMsg('"' + n + '" yüklendi.', true);
+});
+$('#prDel').addEventListener('click', async () => {
+  const n = $('#prSel').value;
+  if (!n || !presets[n]) return;
+  delete presets[n];
+  try { await writePresets(); fillPresetList(); prMsg('"' + n + '" silindi.', true); } catch (e) { prMsg('Silinemedi: ' + e.message, false); }
+});
+
+updateFsUi();
+detectServer().then(() => loadPresets());
+</script>

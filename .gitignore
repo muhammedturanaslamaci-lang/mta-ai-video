@@ -1,0 +1,5 @@
+node_modules/
+out/
+public/m/
+materyaller/*/video/*
+!materyaller/*/video/.gitkeep
