@@ -1,5 +1,6 @@
 // Kullanım:
 //   node scripts/kontrol.mjs plan dikey.json     -> render ÖNCESİ plan doğrulaması
+//   node scripts/kontrol.mjs sahne sahne.json    -> sesli anlatım + görsel planı (ekran hep dolu mu)
 //   node scripts/kontrol.mjs cikti out/video.mp4 [--sure SN] -> render SONRASI ölçüm
 // Başarısızlık varsa çıkış kodu 1 olur. Teslimden önce hepsi geçmeli.
 import {spawnSync} from 'node:child_process';
@@ -81,6 +82,29 @@ if (mod === 'plan') {
     // 5) vurgu rengi sadece uyarı
     p.events.filter((e) => e.type === 'text' && e.tone === 'uyari').length > 6 && warn('Çok fazla uyarı vurgusu (vurgu rengi sadece gerçek uyarı ve tehlike için).');
   }
+} else if (mod === 'sahne') {
+  // Sesli anlatım + görsel: kaynağın görüntüsü kullanılmaz, ekranı her an bir sahne doldurmalı.
+  const p = JSON.parse(fs.readFileSync(file, 'utf8'));
+  for (const k of ['width', 'height', 'fps', 'duration', 'theme', 'events', 'bg']) if (p[k] === undefined) fail(`Eksik alan: ${k}${k === 'bg' ? ' (opak arka plan rengi, örn. "#101218")' : ''}`);
+  if (!fails.length) {
+    if (/^#?0{3}(0{3})?$/.test(String(p.bg))) warn('bg tam siyah. Biraz renkli koyu bir ton seç (örn. #101218).');
+    const ARA = ['progress', 'caption', 'cursor', 'frame', 'marker', 'spotlight', 'arrow', 'keys', 'text', 'logo', 'chapter', 'lowerthird'];
+    const ana = p.events.filter((e) => !ARA.includes(e.type)).map((e) => [e.start, e.start + e.dur]).sort((a, b) => a[0] - b[0]);
+    p.events.forEach((e, i) => { if (e.start < 0 || e.start + e.dur > p.duration + 0.05) fail(`efekt ${i + 1} (${e.type}): süre dışında`); });
+    if (!ana.length) fail('Hiç ana sahne yok. title, card, shot, search, counter, chart, list, compare, subscribe, countdown kullan.');
+    let t = 0;
+    const bos = [];
+    for (const [a, b] of ana) { if (a - t > 1) bos.push([t, a]); t = Math.max(t, b); }
+    if (p.duration - t > 1) bos.push([t, p.duration]);
+    bos.forEach(([a, b]) => fail(`${a.toFixed(1)}-${b.toFixed(1)} sn arası ekranda ana sahne yok (${(b - a).toFixed(1)} sn boş zemin). shot, card, list, chart gibi bir sahne koy.`));
+    // aynı ana sahne çok uzun kalmasın
+    p.events.filter((e) => !ARA.includes(e.type) && e.dur > 8).forEach((e) => warn(`${e.type} (${e.start} sn) ${e.dur} sn sürüyor. 6-8 sn'den uzun sahneleri böl ya da içine hareket ekle.`));
+    // konumsal efektler bir görselin üstünde olmalı
+    p.events.filter((e) => ['frame', 'marker', 'spotlight', 'arrow', 'cursor'].includes(e.type)).forEach((e) => {
+      const alt = p.events.some((o) => o.type === 'shot' && o.start <= e.start && o.start + o.dur >= e.start + e.dur);
+      if (!alt) warn(`${e.type} (${e.start} sn) altında shot yok. Boş zemine çerçeve çizilmez.`);
+    });
+  }
 } else if (mod === 'cikti') {
   if (!fs.existsSync(file)) { console.error('Dosya yok'); process.exit(1); }
   const pr = JSON.parse(run('ffprobe', ['-v', 'error', '-print_format', 'json', '-show_streams', '-show_format', file]).stdout);
@@ -113,7 +137,7 @@ if (mod === 'plan') {
   const starts = [...fr.stderr.matchAll(/freeze_start:\s*([0-9.]+)/g)].map((m) => Number(m[1]));
   fz.forEach((d, i) => fail(`Görüntü ${starts[i] !== undefined ? starts[i].toFixed(0) : '?'}. sn'de ${d.toFixed(1)} sn boyunca hiç değişmiyor. Kadraj hareketi veya efekt ekle.`));
 } else {
-  console.error('Kullanım: node scripts/kontrol.mjs plan dikey.json | node scripts/kontrol.mjs cikti VIDEO [--sure SN]');
+  console.error('Kullanım: node scripts/kontrol.mjs plan dikey.json | node scripts/kontrol.mjs sahne sahne.json | node scripts/kontrol.mjs cikti VIDEO [--sure SN]');
   process.exit(1);
 }
 warns.forEach((w) => console.log('Uyarı: ' + w));

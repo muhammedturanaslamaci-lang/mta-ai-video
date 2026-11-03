@@ -1,6 +1,6 @@
 import React from 'react';
-import {AbsoluteFill, Img, Sequence, interpolate, spring, staticFile, useCurrentFrame} from 'remotion';
-import {useVC} from './box';
+import {AbsoluteFill, Img, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {BoxProvider, useVC} from './box';
 import {Ev, Props, Theme} from './types';
 import {bright, fontFor, panel, place, readable} from './theme';
 
@@ -178,7 +178,7 @@ const List: React.FC<CP<'list'>> = ({ev, dur, theme}) => {
     <Wrap ev={{...ev, pos: ev.pos ?? 'orta'}} dur={dur} theme={theme}>
       <div style={{...panel(theme, u), maxWidth: 1200 * u}}>
         {ev.items.map((it, i) => {
-          const t0 = 8 + i * fps * 0.5;
+          const t0 = ev.times ? ev.times[i] * fps : 8 + i * fps * 0.5;
           const p = interpolate(frame, [t0, t0 + 10], [0, 1], clamp);
           return (
             <div key={i} style={{opacity: p, transform: `translateX(${(1 - p) * 30 * u}px)`, fontSize: 46 * u, lineHeight: 1.3, marginTop: i ? 10 * u : 0}}>
@@ -366,15 +366,82 @@ const Caption: React.FC<CP<'caption'>> = ({ev, dur, theme}) => {
   const u = useVC().u;
   const words = ev.text.split(/\s+/);
   const idx = Math.min(words.length - 1, Math.floor((frame / dur) * words.length));
-  const hi = bright(theme.primary, theme.accent);
+  const hi = theme.primary;
   return (
     <Wrap ev={{...ev, pos: ev.pos ?? 'alt'}} dur={dur} theme={theme}>
-      <div style={{textAlign: 'center', fontSize: 58 * u, fontWeight: 800, lineHeight: 1.2, color: '#fff', textShadow: `0 ${2 * u}px ${8 * u}px rgba(0,0,0,.85), 0 0 ${2 * u}px #000`, maxWidth: 1500 * u}}>
+      <div style={{textAlign: 'center', fontSize: 58 * u, fontWeight: 800, lineHeight: 1.2, color: '#fff', textShadow: `0 ${2 * u}px ${8 * u}px rgba(0,0,0,.85), 0 0 ${2 * u}px #000`, maxWidth: 1000 * u}}>
         {words.map((w, i) => (
           <span key={i} style={{color: ev.karaoke && i === idx ? hi : '#fff', marginRight: 14 * u, display: 'inline-block'}}>{w}</span>
         ))}
       </div>
     </Wrap>
+  );
+};
+
+// Tam sayfa sahne: ekran penceresini tamamen kaplar (arka plandaki kayit gorunmez).
+// kicker: ust etiket, title: buyuk baslik, body: aciklama, items: adimlar,
+// mark: body icinde alti cizilecek ifade, note: cerceveli kutu (ornek soru).
+const Sayfa: React.FC<CP<'sayfa'>> = ({ev, dur, theme}) => {
+  const {width, height} = useVC();
+  const frame = useCurrentFrame();
+  const {fps} = useVC();
+  const u = useVC().u;
+  const inn = Math.min(1, frame / Math.max(1, Math.round(fps * 0.35)));
+  const out = interpolate(frame, [dur - Math.round(fps * 0.25), dur], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const p = Math.min(inn, out);
+  const rise = (1 - inn) * 34 * u;
+  const mark = ev.mark;
+  const isaret = ev.isaret;
+  const body = (() => {
+    if (!ev.body) return null;
+    if (isaret && ev.body.includes(isaret)) {
+      const [b, a] = ev.body.split(isaret);
+      return (
+        <>
+          {b}
+          <span style={{background: theme.primary, color: '#111111', padding: `${2 * u}px ${7 * u}px`, borderRadius: 4 * u}}>{isaret}</span>
+          {a}
+        </>
+      );
+    }
+    if (mark && ev.body.includes(mark)) {
+      const [b, a] = ev.body.split(mark);
+      return (
+        <>
+          {b}
+          <span style={{textDecoration: `underline ${theme.primary} ${5 * u}px`, textUnderlineOffset: 10 * u}}>{mark}</span>
+          {a}
+        </>
+      );
+    }
+    return ev.body;
+  })();
+  return (
+    <div style={{position: 'absolute', left: 0, top: 0, width, height, background: theme.secondary, opacity: p, fontFamily: fontFor(theme)}}>
+      <div style={{position: 'absolute', left: 0, top: 0, width: '100%', height: 12 * u, background: theme.primary}} />
+      {ev.num ? <div style={{position: 'absolute', right: 54 * u, top: 250 * u, fontSize: 190 * u, lineHeight: 0.9, fontWeight: 800, color: theme.primary, opacity: 0.18}}>{ev.num}</div> : null}
+      <div style={{position: 'absolute', left: 64 * u, right: 64 * u, top: 280 * u, bottom: 280 * u, display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
+        <div style={{fontSize: 30 * u, letterSpacing: 5 * u, fontWeight: 700, color: theme.primary, textTransform: 'uppercase'}}>{ev.kicker}</div>
+        <div style={{marginTop: 20 * u, height: 2 * u, width: '100%', background: 'rgba(255,255,255,0.16)'}} />
+        <div style={{marginTop: 52 * u, fontSize: 88 * u, fontWeight: 800, color: '#ffffff', lineHeight: 1.08, transform: `translateY(${rise}px)`}}>{ev.title}</div>
+        {ev.body ? <div style={{marginTop: 30 * u, fontSize: 40 * u, color: '#e9e9e9', lineHeight: 1.45, maxWidth: 900 * u}}>{body}</div> : null}
+        {ev.items ? (
+          <div style={{marginTop: 36 * u, display: 'flex', flexDirection: 'column', gap: 20 * u}}>
+            {ev.items.map((it, i) => (
+              <div key={i} style={{display: 'flex', gap: 18 * u, alignItems: 'flex-start', opacity: Math.max(0, Math.min(1, (frame - 8 - i * 8) / 10))}}>
+                <div style={{width: 28 * u, height: 4 * u, background: theme.primary, marginTop: 28 * u, flexShrink: 0}} />
+                <div style={{fontSize: 38 * u, color: '#ffffff', lineHeight: 1.35}}>{it}</div>
+              </div>
+            ))}
+          </div>
+        ) : null}
+        {ev.note ? (
+          <div style={{marginTop: 46 * u, border: `${3 * u}px solid ${theme.primary}`, borderRadius: 14 * u, padding: `${26 * u}px ${30 * u}px`, fontSize: 42 * u, color: '#ffffff', background: 'rgba(255,138,0,0.12)'}}>
+            {ev.note}
+          </div>
+        ) : null}
+      </div>
+    </div>
   );
 };
 
@@ -402,12 +469,31 @@ export const One: React.FC<{ev: Ev; dur: number; theme: Theme}> = ({ev, dur, the
     case 'chapter': return <Chapter ev={ev} dur={dur} theme={theme} />;
     case 'countdown': return <Countdown ev={ev} dur={dur} theme={theme} />;
     case 'caption': return <Caption ev={ev} dur={dur} theme={theme} />;
+    case 'sayfa': return <Sayfa ev={ev} dur={dur} theme={theme} />;
   }
 };
 
-export const Overlay: React.FC<Props> = ({events, theme, fps}) => {
+// Sesli anlatım modunda arka plan: düz renk + çok yavaş kayan yumuşak ışık (görüntü hiç donmaz)
+const Zemin: React.FC<{bg: string; theme: Theme}> = ({bg, theme}) => {
+  const f = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const t = f / fps;
+  const x = 50 + 30 * Math.sin(t / 9), y = 35 + 20 * Math.cos(t / 11);
   return (
+    <AbsoluteFill style={{background: bg}}>
+      <AbsoluteFill style={{background: `radial-gradient(120% 80% at ${x}% ${y}%, ${theme.primary}1a, transparent 60%)`}} />
+      <AbsoluteFill style={{background: `radial-gradient(110% 70% at ${100 - x}% ${100 - y}%, ${theme.secondary}12, transparent 60%)`}} />
+    </AbsoluteFill>
+  );
+};
+
+export const Overlay: React.FC<Props> = ({events, theme, fps, bg}) => {
+  const {width, height} = useVideoConfig();
+  // sesli anlatımda sahneler tüm ekranı kullanır: öğeler daha büyük çizilir
+  const box = bg ? {width, height, u: width >= height * 1.2 ? width / 1500 : width / 1100} : null;
+  const body = (
     <AbsoluteFill style={{background: 'transparent'}}>
+      {bg ? <Zemin bg={bg} theme={theme} /> : null}
       {events.map((ev, i) => {
         const from = Math.round(ev.start * fps);
         const dur = Math.max(1, Math.round(ev.dur * fps));
@@ -419,4 +505,5 @@ export const Overlay: React.FC<Props> = ({events, theme, fps}) => {
       })}
     </AbsoluteFill>
   );
+  return box ? <BoxProvider box={box}>{body}</BoxProvider> : body;
 };

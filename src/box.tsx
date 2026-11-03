@@ -13,5 +13,6 @@ export const useVC = () => {
   const vc = useVideoConfig();
   const b = useContext(BoxCtx);
   if (b) return {...vc, width: b.width, height: b.height, u: b.u};
-  return {...vc, u: vc.width / 1920};
+  // yatay tuvalde 1920 genişliğe, dikey ve kare tuvalde 1400 genişliğe göre (Dikey ve Grafik ile aynı ölçü)
+  return {...vc, u: vc.width >= vc.height * 1.2 ? vc.width / 1920 : vc.width / 1400};
 };

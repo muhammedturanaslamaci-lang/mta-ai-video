@@ -37,6 +37,8 @@ export const place = (pos: Pos | undefined, w: number, h: number): React.CSSProp
   const p = pos ?? 'alt';
   const s: React.CSSProperties = {position: 'absolute', display: 'flex', maxWidth: w * 0.8};
   if (p === 'ust') return {...s, top: my, left: 0, right: 0, justifyContent: 'center', maxWidth: undefined};
+  if (p === 'ust2') return {...s, top: h * 0.27, left: 0, right: 0, justifyContent: 'center', maxWidth: undefined};
+  if (p === 'alt-ust') return {...s, bottom: h * 0.45, left: 0, right: 0, justifyContent: 'center', maxWidth: undefined};
   if (p === 'orta') return {...s, top: 0, bottom: 0, left: 0, right: 0, justifyContent: 'center', alignItems: 'center', maxWidth: undefined};
   if (p === 'alt') return {...s, bottom: my, left: 0, right: 0, justifyContent: 'center', maxWidth: undefined};
   if (p === 'sol-ust') return {...s, top: my, left: mx};

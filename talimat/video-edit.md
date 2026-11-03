@@ -2,10 +2,11 @@
 
 Girdi: form.html'den gelen brief. Kullanıcı genellikle `materyaller/<video>/brief.md` dosyasını işaret eder: önce onu oku, içindeki talimatları ve brief'i uygula. Form dosyaları (video ve materyaller) aynı klasöre zaten yerleştirmiş olur. Brief'te video, oran, yüz kamerası, palet, tasarım stili, efektler, ses, müzik ve materyal listesi bulunur. Brief'te yazan her şeyi uygula. Yazmayan konuda makul varsayım yap ve raporda söyle.
 
-## Üç kural (her şeyden önemli)
+## Dört kural (her şeyden önemli)
 1. **Boş ekran yasak.** Çıktının hiçbir yerinde 3 saniyeden uzun değişmeyen görüntü ve kullanılmayan siyah alan olmaz. Ekran durağansa kadraj hareketi, vurgu ya da görsel eklenir.
 2. **Dikeyde ekranı sığdırma, kırp ve takip et.** Yatay ekran kaydını 9:16'ya sığdırıp altını boş bırakmak hatadır. Aşağıdaki "5D. Dikey çıktı" adımını uygula.
-3. **Kapılar geçilmeden teslim yok.** `scripts/kontrol.mjs` hata verirse düzelt ve tekrar çalıştır. Kapıyı atlayamazsın.
+3. **Sesli anlatımda kaynağın görüntüsü yok.** Brief'te `Tür: Sesli anlatım + görsel` yazıyorsa kaynaktaki görüntü (okunan metin, senaryo, boş ekran) gösterilmez, sadece ses kullanılır. Ekranı baştan sona sahneler doldurur: "5S. Sesli anlatım + görsel" adımını uygula, 5, 5D ve 6'yı atla. Oran (yatay, dikey, kare) fark etmez.
+4. **Kapılar geçilmeden teslim yok.** `scripts/kontrol.mjs` hata verirse düzelt ve tekrar çalıştır. Kapıyı atlayamazsın.
 
 Hazır betikler var, ffmpeg filtresi veya yerleşim hesabını kendin yazma: `scripts/analiz.mjs`, `scripts/kontrol.mjs`, Remotion'daki `Overlay` ve `Dikey` sahneleri. Model küçükse önce `talimat/adim-adim.md` dosyasını oku.
 
@@ -59,7 +60,7 @@ Transkript brif'te verildiyse (materyal/transkript/) onu kullan, Whisper çalı�
 - Ekrandaki yabancı metinleri Türkçe çeviri kartıyla göster.
 
 ### 5. Katman (yatay çıktı)
-Çıktı **dikey** ve kaynak **yatay** ise bu adımı ve adım 6'yı atla, 5D'ye geç. Durağan ekran varsa (`donuk`), o aralıklarda da `detay`, `frame`, `marker`, `spotlight` gibi efektler ekle ve kamera alanı dışında bir yakınlaştırma kullan.
+Tür "Sesli anlatım + görsel" ise bu adımı atla, 5S'ye geç. Çıktı **dikey** ve kaynak **yatay** ise bu adımı ve adım 6'yı atla, 5D'ye geç. Durağan ekran varsa (`donuk`), o aralıklarda da `detay`, `frame`, `marker`, `spotlight` gibi efektler ekle ve kamera alanı dışında bir yakınlaştırma kullan.
 
 `katman.json` dosyası yaz. Şema:
 
@@ -122,6 +123,7 @@ npx remotion render src/index.ts Overlay out/katman.webm --props=katman.json --c
 Çok uzun videolarda katmanı bölümlere ayırıp ayrı ayrı render etmek süreyi kısaltır. Olmayan zamanlar boş kalsın.
 
 ### 5D. Dikey çıktı (yatay kaynak, 9:16)
+Tür "Sesli anlatım + görsel" ise bu adımı atla, 5S'ye geç.
 `Dikey` sahnesi ekranı kırpıp takip eder, yüzü altta kaynak oranında gösterir, efektleri ekran penceresine göre çizer ve tek geçişte 1080x1920 video üretir.
 
 1. Hızı uygulanmış videoyu `public/m/taban.mp4` olarak kopyala (hız yoksa orijinali kopyala).
@@ -144,6 +146,27 @@ npx remotion render src/index.ts Dikey out/dikey-sessiz.mp4 --props=dikey.json -
 ffmpeg -y -i out/dikey-sessiz.mp4 -i out/hizli.mp4 -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -shortest out/<video>-edit.mp4
 ```
 (`out/hizli.mp4` yoksa orijinal videoyu ver.) Müzik varsa adım 7'yi uygula.
+
+### 5S. Sesli anlatım + görsel (kaynağın görüntüsü kullanılmaz)
+Kaynak video sadece ses için vardır. Ekranda hiçbir anda kaynağın görüntüsü görünmez. `Overlay` sahnesi `bg` alanıyla opak çizilir: tam ekran sahneler, yavaş hareket eden bir zemin üstünde.
+
+1. `sahne.json` yaz (örnek: `sahne.ornek.json`). `width`/`height` çıktı oranına göre: 9:16 → 1080x1920, 16:9 → 1920x1080, 1:1 → 1080x1080. `duration` hızlanmış süre. `bg`: paletten koyu, biraz renkli bir ton (tam siyah değil).
+2. `events` ile konuşmayı baştan sona sahnelere böl. Her an bir ana sahne görünür: `title`, `card`, `shot`, `search`, `counter`, `chart`, `list`, `compare`, `countdown`, `subscribe`. Sahneler 3-7 sn sürer, konuşmayla aynı anda başlar ve birbirine 0.2-0.4 sn biner. `logo`, `text`, `keys`, `caption`, `progress` ana sahnenin üstüne eklenen yardımcılardır, tek başlarına sahne sayılmaz.
+   - Marka adı geçince logosu, rakam geçince sayaç, liste sayılınca `list`, karşılaştırmada `compare`, "aradım" denince `search`, haber/post anlatılınca o materyalin `shot`'u.
+   - Konuşmacı ekrandaki bir şeyi gösteriyorsa ("şuraya bakın", "ekranda gördüğünüz"), o anın karesini kaynaktan al ve `shot` olarak göster: `ffmpeg -y -ss SANIYE -i out/hizli.mp4 -frames:v 1 public/m/kare-SANIYE.png`. Okunan metin (senaryo, not) asla gösterilmez.
+   - Ses olarak hep aynı geçişi kullanma, aynı sahne tipini art arda üç kez koyma.
+3. KAPI 1: `node scripts/kontrol.mjs sahne sahne.json` → boş zemin kalan aralık varsa hata verir. Düzelt, tekrar çalıştır.
+4. Render ve ses:
+```
+npx remotion render src/index.ts Overlay out/sahne-sessiz.mp4 --props=sahne.json --codec=h264 --muted
+ffmpeg -y -i out/sahne-sessiz.mp4 -i out/hizli.mp4 -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -shortest out/<video>-edit.mp4
+```
+5. Brief yüzün girişte ve CTA'da görünmesini istiyorsa ve kaynakta kamera varsa (kutu x, y, w, h piksel), yüzü bu aralıklarda alta bindir (kendi oranında, büyütmeden fazla değil):
+```
+ffmpeg -y -i out/sahne-sessiz.mp4 -i out/hizli.mp4 -filter_complex "[1:v]crop=W:H:X:Y,scale=420:-2[f];[0:v][f]overlay=(main_w-overlay_w)/2:main_h-overlay_h-120:enable='between(t,0,KANCA_SONU)+between(t,CTA_BASI,SURE)'[v]" -map "[v]" -map 1:a -c:v libx264 -preset veryfast -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k -shortest out/<video>-edit.mp4
+```
+   Bu aralıklarda sahneleri üst yarıya koy (`pos: "ust"`), yüzün üstüne yazı gelmesin.
+6. KAPI 2 (adım 8) aynen geçerli.
 
 ### 6. Birleştirme (yatay çıktı)
 Önemli: şeffaflığın okunması için katman girdisinden önce `-c:v libvpx` yaz.

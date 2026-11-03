@@ -1,5 +1,5 @@
 export type StyleName = 'cizgi' | 'blok' | 'cam' | 'editoryal' | 'terminal';
-export type Pos = 'ust' | 'orta' | 'alt' | 'sol-ust' | 'sag-ust' | 'sol-alt' | 'sag-alt';
+export type Pos = 'ust' | 'ust2' | 'alt-ust' | 'orta' | 'alt' | 'sol-ust' | 'sag-ust' | 'sol-alt' | 'sag-alt';
 
 export type Theme = {
   primary: string;   // ana renk
@@ -21,7 +21,7 @@ export type Ev =
   | (Base & {type: 'text'; text: string; pos?: Pos; tone?: 'normal' | 'uyari'})
   | (Base & {type: 'title'; title: string; sub?: string; pos?: Pos})
   | (Base & {type: 'lowerthird'; name: string; role?: string})
-  | (Base & {type: 'list'; items: string[]; pos?: Pos})
+  | (Base & {type: 'list'; items: string[]; times?: number[]; pos?: Pos})
   | (Base & {type: 'cursor'; x: number; y: number; fromX?: number; fromY?: number; click?: boolean; ring?: boolean}) // yüzde
   | (Base & {type: 'keys'; keys: string[]; pos?: Pos})
   | (Base & {type: 'progress'})
@@ -33,7 +33,9 @@ export type Ev =
   | (Base & {type: 'subscribe'; text?: string; pos?: Pos})
   | (Base & {type: 'chapter'; label: string; index?: number})
   | (Base & {type: 'countdown'; from: number; pos?: Pos})
-  | (Base & {type: 'caption'; text: string; karaoke?: boolean; pos?: Pos});
+  | (Base & {type: 'caption'; text: string; karaoke?: boolean; pos?: Pos})
+  // tam sayfa sahne: ekran kaydini tamamen ortuser, baslik + aciklama + adim listesi
+  | (Base & {type: 'sayfa'; kicker: string; title: string; body?: string; items?: string[]; mark?: string; isaret?: string; note?: string; num?: string});
 
 export type Props = {
   width: number;
@@ -44,6 +46,8 @@ export type Props = {
   events: Ev[];
   // yüz kamerasının bulunduğu alan (yüzde). Bu alana hiçbir şey çizilmez.
   camera?: {x: number; y: number; w: number; h: number};
+  // Sesli anlatım + görsel: opak arka plan rengi. Verilirse katman şeffaf değil, tam ekran sahnedir (kaynağın görüntüsü kullanılmaz).
+  bg?: string;
 };
 
 // ---- Dikey (9:16) sahne: yatay ekran kaydını kırpıp takip eder, yüzü altta gösterir ----
@@ -58,4 +62,5 @@ export type DikeyProps = Props & {
   faceShow: [number, number][];        // yüzün göründüğü aralıklar (sn). Boşsa yüz hiç görünmez.
   kadraj: Kadraj[];                    // en az 1 nokta, t'ye göre sıralı
   bg?: string;                         // arka plan rengi
+  ekran?: boolean;                     // false ise kayit hic gosterilmez (tam sayfa edit)
 };

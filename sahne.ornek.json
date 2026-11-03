@@ -1,0 +1,12 @@
+{
+ "width": 1080, "height": 1920, "fps": 30, "duration": 14,
+ "bg": "#101218",
+ "theme": {"primary": "#7cc4ff", "secondary": "#ffffff", "accent": "#ff5c5c", "style": "cam"},
+ "events": [
+  {"type": "title", "start": 0, "dur": 3.2, "title": "Claude ile pazarlama", "sub": "5 skill, 1 dakika", "pos": "orta"},
+  {"type": "search", "start": 3, "dur": 3.4, "query": "claude marketing skills", "pos": "orta"},
+  {"type": "counter", "start": 6.2, "dur": 3, "to": 120, "suffix": " saat", "label": "ayda kazanılan zaman", "pos": "orta"},
+  {"type": "list", "start": 9, "dur": 5, "items": ["Rakip analizi", "Reklam metni", "E-posta serisi"], "pos": "orta"},
+  {"type": "progress", "start": 0, "dur": 14}
+ ]
+}

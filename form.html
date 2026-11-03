@@ -351,7 +351,7 @@ footer::before { content: ""; width: 8px; height: 8px; border-radius: 50%; backg
             <label class="opt"><input type="radio" name="type" value="Ekran kaydı + yüz kamerası" checked><span>Ekran kaydı + yüz kamerası</span></label>
             <label class="opt"><input type="radio" name="type" value="Sadece ekran kaydı"><span>Sadece ekran kaydı</span></label>
             <label class="opt"><input type="radio" name="type" value="Konuşan kafa (sadece kamera)"><span>Konuşan kafa<small>Sadece kamera</small></span></label>
-            <label class="opt"><input type="radio" name="type" value="Sesli anlatım + görsel"><span>Sesli anlatım + görsel</span></label>
+            <label class="opt"><input type="radio" name="type" value="Sesli anlatım + görsel"><span>Sesli anlatım + görsel<small>Sadece sesin kullanılır, ekranı baştan sona görseller doldurur</small></span></label>
           </div>
         </div>
         <div class="field">
@@ -1123,6 +1123,7 @@ function build() {
   if (!zoomTouched) $('#zoom').value = Math.max(1, Math.round(dur * 6 / 15));
   const zoom = +$('#zoom').value || 0;
   const fmt = val('fmt'), type = val('type'), raw = val('raw'), cam = val('cam');
+  const narr = type === 'Sesli anlatım + görsel';
   const dens = +$('#dens').value;
   $('#densOut').textContent = DENS[dens - 1];
   const base = 'materyaller/' + sl + '/';
@@ -1194,12 +1195,12 @@ function build() {
     '## Brief: ' + name,
     '- Video: ' + videoFile + ' (klasör: ' + base + 'video/)',
     '- Kaynak video: ' + (srcInfo ? srcInfo.w + 'x' + srcInfo.h + ' (' + srcInfo.kind + ')' : 'bilinmiyor, ffprobe ile bak'),
-    '- Çıktı oranı: ' + fmt + (fmt.indexOf('9:16') === 0 && (!srcInfo || srcInfo.kind === 'yatay') ? '. Kaynak yatay: ekranı sığdırıp altını boş bırakma, talimat/video-edit.md içindeki "5D. Dikey çıktı" akışını uygula (ekranı kırp ve takip et).' : ''),
+    '- Çıktı oranı: ' + fmt + (narr ? '. Sesli anlatım: kaynağın görüntüsü kullanılmaz, ekranı baştan sona sahneler doldurur. talimat/video-edit.md içindeki "5S. Sesli anlatım + görsel" akışını uygula (5D ve kadraj takibi YOK).' : fmt.indexOf('9:16') === 0 && (!srcInfo || srcInfo.kind === 'yatay') ? '. Kaynak yatay: ekranı sığdırıp altını boş bırakma, talimat/video-edit.md içindeki "5D. Dikey çıktı" akışını uygula (ekranı kırp ve takip et).' : ''),
     '- Süre: ' + (srcInfo ? Math.floor(srcInfo.dur / 60) + ' dk ' + Math.round(srcInfo.dur % 60) + ' sn (dosyadan okundu)' : 'yaklaşık ' + dur + ' dakika'),
     '- Videonun konusu: ' + ($('#topic').value.trim() || 'belirtilmedi, konuşmadan çıkar'),
     '- Transkript: ' + (tfile ? 'verildi (materyal/transkript/' + tfile.name + '). Konuşmayı yazıya dökme, bunu kullan.' : 'yok, konuşmayı kendin yazıya dök'),
-    '- Durağan ekran: ' + $('#still').value + '. Hiçbir aralıkta 3 saniyeden uzun değişmeyen görüntü bırakma.',
-    '- Tür: ' + type,
+    narr ? '- Durağan ekran: Kaynak görüntü kullanılmadığı için yok. Sahneler 3-7 saniyede bir değişsin, hiçbir aralıkta 3 saniyeden uzun değişmeyen görüntü olmasın.' : '- Durağan ekran: ' + $('#still').value + '. Hiçbir aralıkta 3 saniyeden uzun değişmeyen görüntü bırakma.',
+    '- Tür: ' + type + (narr ? '. Videodan sadece SES kullanılır. Kaynaktaki görüntü (okuduğum metin, senaryo, boş ekran) hiçbir anda izleyiciye görünmez. Ekranda bir şeyi gösterdiğimi söylediğim anlarda o anın karesi görsel olarak kullanılabilir.' : ''),
     '- Video hızı: ' + $('#speed').value,
     '- Video durumu: ' + (raw === 'cut' ? 'Kendim kestim, kesime dokunma. Sadece istenen efektleri ekle.' : 'Ham video. Hatalı ve gereksiz yerleri kes. Art arda tekrar edilen cümlelerde sonuncusunu al.'),
     '- Yüz kamerası: ' + camText,
@@ -1229,8 +1230,8 @@ function build() {
     '1. Analiz: Videoyu dinle ve konuşmayı yazıya dök. Marka adı, rakam, haber, sosyal medya postu, arama ve "yukarıda/aşağıda" gibi gösterim anlarını işaretle.',
     '2. Yaratıcı plan: Her an için ne gösterileceğini yaz (logo, ekran görüntüsü, arama sahnesi, sayaç, yakınlaştırma). Planlamadan önce benzer videolara bak. Her videoda aynı görünen kalıplardan kaçın.',
     '3. Materyal: Brifteki klasörden materyalleri al. "Sen bul" yazılanları bul, uzun sürüyorsa atla. Yabancı dildeki yazıları Türkçeye çevir.',
-    '4. Katman: Efektleri şeffaf arka planlı ayrı katman olarak render et. Konuştuğum an efekt de gelsin, kayma olmasın.',
-    '5. Birleştirme: ffmpeg ile katmanı ana videoyla birleştir' + (music ? ', müziği karıştır' : '') + '. Orijinal videoyu değiştirme, çıktıyı yeni dosya olarak kaydet.',
+    narr ? '4. Sahneler: Konuşmayı baştan sona tam ekran sahnelere böl (talimat 5S), "node scripts/kontrol.mjs sahne sahne.json" kapısını geç. Konuştuğum an sahne de gelsin, kayma olmasın.' : '4. Katman: Efektleri şeffaf arka planlı ayrı katman olarak render et. Konuştuğum an efekt de gelsin, kayma olmasın.',
+    narr ? '5. Ses: Sahne videosuna kaynağın sesini ekle' + (music ? ', müziği karıştır' : '') + '. Kaynağın görüntüsünü kullanma. Orijinal videoyu değiştirme, çıktıyı yeni dosya olarak kaydet.' : '5. Birleştirme: ffmpeg ile katmanı ana videoyla birleştir' + (music ? ', müziği karıştır' : '') + '. Orijinal videoyu değiştirme, çıktıyı yeni dosya olarak kaydet.',
     '6. Kontrol: Ses ve efekt senkronunu, yüz kamerasının ikilenmediğini, kişisel bilgilerin bulanık olduğunu ve yazıların okunduğunu kontrol et.',
     '7. Bitince dosyayı açma. Sadece nerede olduğunu söyle.'
   ].join('\n');

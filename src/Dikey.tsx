@@ -10,6 +10,9 @@ const Screen: React.FC<DikeyProps> = (p) => {
   const {fps} = useVideoConfig();
   const t = frame / fps;
   const win = windowRect(t, p.faceShow);
+  // Yuz gizliyken kayit gorunmez: ekran penceresi duz sayfa olur, uzerine tam sayfa
+  // edit sahneleri (sayfa) gelir. Yuz gorunurken kayit kucultulerek gorunur.
+  const fa = faceAmount(t, p.faceShow);
   const k = kadrajAt(t, p.kadraj);
   const s = win.w / ((k.w / 100) * p.srcW);
   const scaledW = p.srcW * s, scaledH = p.srcH * s;
@@ -19,11 +22,13 @@ const Screen: React.FC<DikeyProps> = (p) => {
   top = scaledH >= win.h ? Math.max(win.h - scaledH, Math.min(0, top)) : (win.h - scaledH) / 2;
   return (
     <div style={{position: 'absolute', left: win.x, top: win.y, width: win.w, height: win.h, overflow: 'hidden', background: p.bg ?? '#000'}}>
-      <OffthreadVideo
-        src={staticFile('m/' + p.video)}
-        muted
-        style={{position: 'absolute', left: 0, top: 0, width: p.srcW, height: p.srcH, transformOrigin: '0 0', transform: `translate(${left}px, ${top}px) scale(${s})`}}
-      />
+      {p.ekran === false ? null : (
+        <OffthreadVideo
+          src={staticFile('m/' + p.video)}
+          muted
+          style={{position: 'absolute', left: 0, top: 0, width: p.srcW, height: p.srcH, transformOrigin: '0 0', transform: `translate(${left}px, ${top}px) scale(${s})`, opacity: fa}}
+        />
+      )}
     </div>
   );
 };

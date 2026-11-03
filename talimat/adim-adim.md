@@ -6,6 +6,7 @@ Brif: `materyaller/<video>/brief.md`. Ayrıntı gerekirse `talimat/video-edit.md
 ## Yasaklar
 - Orijinal videoyu değiştirme. Çıktılar `out/` altına gider.
 - Ekranı 9:16'ya sığdırıp altını boş bırakma.
+- "Sesli anlatım + görsel" türünde kaynağın görüntüsünü (okuma ekranı) gösterme.
 - Kendi ffmpeg filtreni yazma. Aşağıdaki komutları kullan.
 - Bitince dosyayı açma, sadece yerini söyle.
 
@@ -31,6 +32,15 @@ Transkript dosyası varsa (`materyal/transkript/`) onu oku. Yoksa: `python -m fa
 
 ## 4. Materyal
 Logoları ve ekran görüntülerini `public/m/` içine düz dosya adıyla kopyala. "Sen bul" yazılanları bulamıyorsan atla, soru sorma.
+
+## 5S. Brifte "Tür: Sesli anlatım + görsel" yazıyorsa (önce buna bak)
+Kaynağın görüntüsü HİÇ gösterilmez, sadece sesi kullanılır. 5 ve 5D'yi atla.
+1. `sahne.ornek.json` dosyasını `sahne.json` olarak kopyala. `width`/`height`: 9:16 ise 1080x1920, 16:9 ise 1920x1080, 1:1 ise 1080x1080. `duration`: saniye. `bg`: koyu renkli ton.
+2. `events`: konuşmayı 3-7 sn'lik sahnelere böl. Her saniyede bir ana sahne olsun (`title`, `card`, `shot`, `search`, `counter`, `chart`, `list`, `compare`). Ekranda bir şey gösteriliyorsa karesini al: `ffmpeg -y -ss SANIYE -i out/hizli.mp4 -frames:v 1 public/m/kare-SANIYE.png` ve `shot` yap.
+3. KAPI 1: `node scripts/kontrol.mjs sahne sahne.json`
+4. `npx remotion render src/index.ts Overlay out/sahne-sessiz.mp4 --props=sahne.json --codec=h264 --muted`
+5. `ffmpeg -y -i out/sahne-sessiz.mp4 -i out/hizli.mp4 -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -shortest out/<video>-edit.mp4`
+Yüz girişte/CTA'da görünecekse komut `talimat/video-edit.md` 5S adım 5'te.
 
 ## 5. Çıktı yataysa (16:9 -> 16:9)
 `katman.json` yaz (şema: `katman.ornek.json`), sonra:
