@@ -2,13 +2,17 @@ Bu videoyu aşağıdaki brife göre edit et. Akış için talimat/video-edit.md 
 
 ## Brief: Video 1
 - Video: video dosyası (klasör: materyaller/video-1/video/)
-- Görüntü oranı: 16:9 (yatay)
+- Kaynak video: bilinmiyor, ffprobe ile bak
+- Çıktı oranı: 16:9 (yatay)
 - Süre: yaklaşık 15 dakika
+- Videonun konusu: belirtilmedi, konuşmadan çıkar
+- Transkript: yok, konuşmayı kendin yazıya dök
+- Durağan ekran: Kadraj hareketi (kırpma ve kaydırma) ile canlandır ve gerekli yerlere efekt ekle. Hiçbir aralıkta 3 saniyeden uzun değişmeyen görüntü bırakma.
 - Tür: Ekran kaydı + yüz kamerası
 - Video hızı: Orijinal hızda kalsın
 - Video durumu: Kendim kestim, kesime dokunma. Sadece istenen efektleri ekle.
-- Yüz kamerası: Yüz kamerası yok.
-- Renk paleti: ana #ff8a00, ikinci #111111, vurgu #ffffff. Vurgu rengi sadece altı çizilecek uyarı ve tehlike anlarında.
+- Yüz kamerası: Yüz kamerasını kendin tespit et. Videodan farklı zamanlarda birkaç kare çıkar, kameranın yerini ve boyutunu belirle. Kamera yoksa bu kuralı yok say. Bulduğun alana yazı, efekt veya yakınlaştırma bindirme. Kamerayı ikileme. Büyütme, taşıma, çerçeve, filtre yok.
+- Renk paleti: Sen seç. Her video için konuya uygun bir palet belirle. Aynı paleti art arda kullanma. Sarıya kendiliğinden yönelme.
 - Tasarım stili: Sen seç. Her video için farklı bir tasarım dili belirle (çizgi, blok, cam, editoryal, terminal gibi). Önceki videoların kalıbını tekrarlama.
 - Ek arka plan: Videonun kendisi, ek arka plan yok
 - Giriş kancası: Videoyu dinle, konuşmadaki en vurucu cümleyi bul veya kısa bir kanca cümlesi yaz (en fazla 8 kelime). İlk 3 saniyede ekrana getir. Bulduğun cümleyi raporda yaz.
@@ -23,8 +27,6 @@ Bu videoyu aşağıdaki brife göre edit et. Akış için talimat/video-edit.md 
 - Söylenen detaya yaklaş, sonra tekrar bütüne dön
 - Önemli yeri yakınlaştırıp altını çiz
 - Vurgu için ekrandaki alanı çerçeveye al (zoom yerine)
-- Önemli alanı aydınlatıp çevreyi karart (spotlight)
-- Önemli metni fosforlu kalemle işaretle
 - Rakamlar için yükselen sayaç animasyonu
 - Ekrandaki İngilizce metinleri Türkçeye çevir
 - 'Google'da aradım' gibi anlarda tarayıcı arama sahnesi

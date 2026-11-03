@@ -14,3 +14,13 @@ materyaller/*
 !materyaller/video-1
 materyaller/*/video/*
 !materyaller/*/video/.gitkeep
+
+# video-1 ornegine eklenen kisisel dosyalar (README ve .gitkeep hari\xc3\xa7)
+materyaller/video-1/materyal/**
+!materyaller/video-1/materyal/**/
+!materyaller/video-1/materyal/**/README.md
+
+# test/uretim json dosyalari
+dikey-*.json
+katman-*.json
+!*.ornek.json
