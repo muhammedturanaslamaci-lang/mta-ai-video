@@ -637,6 +637,8 @@ footer::before { content: ""; width: 8px; height: 8px; border-radius: 50%; backg
 </div>
 
 <script>
+const IS_MAC = /Mac/i.test(navigator.platform || '') || /Macintosh/.test(navigator.userAgent || '');
+const LAUNCH = IS_MAC ? 'baslat.command' : 'baslat.bat';
 const PALS = [
   ['Beyaz ve gök mavisi', '#ffffff', '#7cc4ff', '#ff5c5c'],
   ['Mercan ve krem', '#ff7a59', '#fff1e3', '#e11d48'],
@@ -1014,8 +1016,8 @@ function updateFsUi() {
   const btn = $('#fsBtn'), help = $('#fsHelp');
   btn.hidden = SERVER || !FS_OK;
   if (SERVER) help.textContent = 'Videon, materyallerin ve brifin proje klasörüne otomatik yerleşiyor. Bir şey yapman gerekmiyor.';
-  else if (FS_OK) help.textContent = 'Formu baslat.bat ile açarsan dosyalar otomatik yerleşir. Şimdilik düğmeyle proje klasörünü seçebilirsin.';
-  else help.textContent = 'Dosyalar otomatik yerleşemiyor. Formu baslat.bat ile aç. Olmazsa brifin tam metnini kopyalayıp aracına yapıştır.';
+  else if (FS_OK) help.textContent = 'Formu ' + LAUNCH + ' ile açarsan dosyalar otomatik yerleşir. Şimdilik düğmeyle proje klasörünü seçebilirsin.';
+  else help.textContent = 'Dosyalar otomatik yerleşemiyor. Formu ' + LAUNCH + ' ile aç. Olmazsa brifin tam metnini kopyalayıp aracına yapıştır.';
   $('#short').classList.toggle('line', SERVER || FS_OK);
   build();
 }
@@ -1064,7 +1066,7 @@ async function sync() {
     fsStatus('Yerleşti: ' + b.jobs.length + ' dosya, brif güncel (materyaller/' + b.sl + '/brief.md, ' + t + ')', true);
   } catch (e) {
     syncOk = false;
-    fsStatus('Yazılamadı (' + (e && e.message ? e.message : 'hata') + '). baslat.bat penceresi açık mı?', false);
+    fsStatus('Yazılamadı (' + (e && e.message ? e.message : 'hata') + '). ' + LAUNCH + ' penceresi açık mı?', false);
   } finally {
     syncBusy = false;
     if (syncAgain) { syncAgain = false; scheduleSync(100); }
@@ -1091,7 +1093,7 @@ async function prepare() {
     fsStatus('Hazır. ' + b.jobs.length + ' dosya kopyalandı, brif yazıldı: materyaller/' + b.sl + '/brief.md.', true);
   } catch (e) {
     if (e && e.name === 'AbortError') return;
-    fsStatus('Yazılamadı (' + (e && (e.name || e.message) ? (e.name || e.message) : 'hata') + '). Formu baslat.bat ile açmayı dene.', false);
+    fsStatus('Yazılamadı (' + (e && (e.name || e.message) ? (e.name || e.message) : 'hata') + '). Formu ' + LAUNCH + ' ile açmayı dene.', false);
   }
 }
 $('#fsBtn').addEventListener('click', prepare);
@@ -1109,9 +1111,9 @@ $('#go').addEventListener('click', async () => {
     const r = await fetch('/api/baslat' + q, { method: 'POST', headers: { 'X-Form': '1' } });
     const j = await r.json().catch(() => ({}));
     if (r.ok && j.ok) say('Terminal penceresi açıldı, yapay zeka işe başladı. İlerlemeyi o pencerede göreceksin.', true);
-    else if (j.error === 'sadece-windows') say('Otomatik başlatma sadece Windows\'ta çalışır. "Elle yapıştırmak istersen" bölümünü kullan.', false);
+    else if (j.error === 'desteklenmiyor' || j.error === 'sadece-windows') say('Otomatik başlatma bu sistemde çalışmıyor (Windows ve Mac destekleniyor). "Elle yapıştırmak istersen" bölümünü kullan.', false);
     else say('Başlatılamadı (' + (j.error || r.status) + '). "Elle yapıştırmak istersen" bölümünü dene.', false);
-  } catch (e) { say('Sunucuya ulaşılamadı. baslat.bat penceresi açık mı?', false); }
+  } catch (e) { say('Sunucuya ulaşılamadı. ' + LAUNCH + ' penceresi açık mı?', false); }
   btn.disabled = false;
 });
 
@@ -1253,7 +1255,7 @@ function build() {
     other: { n: 'Aracın', cmd: '', note: 'Akış Claude Code ile hazırlandı ve onunla denendi. Aracın dosya okuyup yazabilmeli, komut çalıştırabilmeli ve görsel dosyaları görebilmeli.' }
   };
   const tl = TOOLS[$('#tool').value];
-  $('#toolHint').textContent = (tl.cmd ? 'Proje klasöründeki terminal.bat dosyasını aç ve şunu yaz: ' + tl.cmd + '. ' : '') + tl.note;
+  $('#toolHint').textContent = (tl.cmd ? (IS_MAC ? 'Terminal\'de proje klasörüne gir ve şunu yaz: ' : 'Proje klasöründeki terminal.bat dosyasını aç ve şunu yaz: ') + tl.cmd + '. ' : '') + tl.note;
   const canGo = SERVER && ['claude', 'codex', 'gemini'].includes($('#tool').value);
   $('#go').hidden = !canGo;
   $('#manualcmd').open = !canGo;
@@ -1344,7 +1346,7 @@ async function writePresets() {
     if (!r.ok) throw new Error('sunucu');
     return 'Proje klasöründeki ayarlar/stiller.json dosyasına kaydedildi.';
   }
-  try { localStorage.setItem('editFormAyarlar', JSON.stringify(presets)); return 'Bu tarayıcıya kaydedildi. Kalıcı olması için formu baslat.bat ile aç.'; }
+  try { localStorage.setItem('editFormAyarlar', JSON.stringify(presets)); return 'Bu tarayıcıya kaydedildi. Kalıcı olması için formu ' + LAUNCH + ' ile aç.'; }
   catch (e) { throw new Error('tarayıcı kayda izin vermiyor'); }
 }
 async function loadPresets(sel) { presets = await readPresets(); fillPresetList(sel); }

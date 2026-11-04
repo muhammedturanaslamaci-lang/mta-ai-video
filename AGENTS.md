@@ -9,8 +9,8 @@ Genel kurallar:
 - Orijinal video dosyasına dokunma. Çıktıyı `out/` altına yeni dosya olarak kaydet.
 - Render bitince dosyayı veya uygulamayı açma. Sadece nerede olduğunu söyle.
 - Kullanıcı yoksa soru sorma, makul varsayımla devam et ve raporda hangi varsayımı yaptığını söyle.
-- Gerekli araçlar: Node.js, ffmpeg, Python. Eksik olanı kurmayı önerme, kullanıcıya `baslat.bat` dosyasını çalıştırmasını söyle (eksikleri kendisi kurar).
+- Gerekli araçlar: Node.js, ffmpeg, Python. Eksik olanı kurmayı önerme, kullanıcıya `baslat.bat` (Mac'te `baslat.command`) dosyasını çalıştırmasını söyle (eksikleri kendisi kurar).
 - Çıktı dikeyse yatay ekranı sığdırıp altını boş bırakma: `talimat/video-edit.md` içindeki "5D. Dikey çıktı" akışı. Teslimden önce `node scripts/kontrol.mjs cikti ...` geçmeli.
 - Brief'te "Tür: Sesli anlatım + görsel" yazıyorsa kaynağın görüntüsünü gösterme, sadece sesini kullan: `talimat/video-edit.md` içindeki "5S" akışı ve `node scripts/kontrol.mjs sahne sahne.json` kapısı.
 - Küçük model kullanıyorsan önce `talimat/adim-adim.md` dosyasını oku.
-- Bilgisayarın PATH ayarını kalıcı değiştirme. `setx` kullanma, kayıt defterine (registry) PATH yazma. Gerekirse sadece o oturumda `$env:Path` ya da `set PATH=` ile ekle. Araçlar için `ortam.bat` ve `terminal.bat` var.
+- Bilgisayarın PATH ayarını kalıcı değiştirme. `setx` kullanma, kayıt defterine (registry) PATH yazma. Gerekirse sadece o oturumda `$env:Path`, `set PATH=` ya da (Mac) `export PATH=` ile ekle. `~/.zshrc` gibi kabuk dosyalarına da PATH yazma. Araçlar için `ortam.bat` ve `terminal.bat` var.

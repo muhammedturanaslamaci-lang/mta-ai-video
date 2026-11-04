@@ -27,7 +27,7 @@ Hız yoksa: `cp VIDEO out/hizli.mp4`
 Bundan sonra tüm zamanlar `out/hizli.mp4`'e göredir. Videoyu tekrar analiz et: `node scripts/analiz.mjs out/hizli.mp4 --kamera x,y,w,h`
 
 ## 3. Konuşma
-Transkript dosyası varsa (`materyal/transkript/`) onu oku. Yoksa: `python -m faster_whisper` benzeri bir araç ya da videonun yanındaki altyazıyı kullan. Hiçbiri yoksa kareleri ve brifteki konuyu baz al ve raporda "konuşma çözülemedi" yaz.
+Transkript dosyası varsa (`materyal/transkript/`) onu oku. Yoksa: `python -m faster_whisper` benzeri bir araç (Mac'te `python3`; kurulum için `python3 -m venv .venv && .venv/bin/pip install faster-whisper`) ya da videonun yanındaki altyazıyı kullan. Hiçbiri yoksa kareleri ve brifteki konuyu baz al ve raporda "konuşma çözülemedi" yaz.
 Şunları saniyesiyle not et: marka adı, rakam, "Google'da aradım", haber/post, tuş kısayolu, "yukarıda/aşağıda" gibi gösterimler, uyarı cümleleri.
 
 ## 4. Materyal

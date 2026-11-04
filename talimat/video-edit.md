@@ -26,6 +26,7 @@ Süre değişeceği için analiz, katman ve zamanlar hızlandırılmış videoya
 
 ### 1. Analiz
 - Sesi yazıya dök (Whisper kurulu değilse `pip install faster-whisper` ile dene; olmazsa videonun yanında transkript dosyası ara). Zaman damgalı kelimeler gerekir.
+  - Mac'te `python` ve `pip` yerine `python3` kullan. `pip` "externally-managed-environment" hatası verirse sistem Python'una kurma, proje içinde sanal ortam aç: `python3 -m venv .venv && .venv/bin/pip install faster-whisper`, sonra betiği `.venv/bin/python` ile çalıştır.
 - Şunları işaretle: marka adları, rakamlar, "Google'da aradım" benzeri anlar, haber ve sosyal medya anlatımları, "yukarıda/aşağıda" gibi gösterimler, uyarı ve tehlike cümleleri, bölüm geçişleri.
 
 ### 2. Yüz kamerası (brief "kendin tespit et" diyorsa)

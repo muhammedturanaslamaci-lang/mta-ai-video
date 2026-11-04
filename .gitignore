@@ -4,6 +4,7 @@ public/m/
 
 # kisisel / makineye ozel
 araclar/
+.venv/
 path-yedek.txt
 dikey.json
 katman.json

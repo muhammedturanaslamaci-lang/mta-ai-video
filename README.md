@@ -3,7 +3,7 @@
 Videonu kesersin, logo, arama sahnesi, sayaç, çerçeve vurgusu, ekran görüntüsü, yakınlaştırma ve müziği yapay zeka ekler (Claude Code, Codex CLI, Gemini CLI veya Cursor). Her şey kendi bilgisayarında çalışır.
 
 ## Gerekenler
-- Windows 10 veya 11 bilgisayar
+- Windows 10/11 ya da Mac bilgisayar. Mac'te en sorunsuz kurulum Apple Silicon (M1 ve sonrası) ve macOS 15 Sequoia veya üstüdür. Intel Mac'te ve eski macOS'ta da çalışır, ama Homebrew paketleri derleyebileceği için ilk kurulum uzun sürebilir (bkz. "Mac'te kullanım").
 - Bir yapay zeka kodlama aracı: [Claude Code](https://claude.com/product/claude-code) (ücretli Claude planı gerekir), Codex CLI veya Gemini CLI. Cursor ve diğer araçlarda komutu elle yapıştırırsın.
 - Node.js, ffmpeg ve Python gerekir ama sen kurmazsın: `baslat.bat` eksik olanları kendisi indirir (winget gerekmez). Node.js ve ffmpeg proje içindeki `araclar` klasörüne gider. Bilgisayarının PATH ayarına dokunulmaz.
 
@@ -19,6 +19,26 @@ Videonu kesersin, logo, arama sahnesi, sayaç, çerçeve vurgusu, ekran görünt
 `baslat.bat` açtığı siyah pencere formu kullandığın sürece açık kalmalı. İşin bitince kapat. Sunucu sadece senin bilgisayarında çalışır, dışarıdan erişilemez.
 
 Cursor veya başka bir araç kullanıyorsan ya da düğme çalışmazsa formdaki **Elle yapıştırmak istersen** bölümünden komutu kopyalayıp aracına yapıştır. Kendi terminalini açmak için `terminal.bat` var: Node.js, ffmpeg ve Python orada tanınır.
+
+## Mac'te kullanım
+1. Zip'i indir ve aç (genelde İndirilenler klasörüne açılır).
+2. Terminal'i aç: `Cmd + Boşluk`, "Terminal" yaz, Enter.
+3. Terminal'e `bash ` yaz (sonunda bir boşluk bırak), sonra klasördeki `baslat.command` dosyasını sürükleyip Terminal penceresine bırak ve Enter'a bas.
+   - İlk seferde Homebrew yoksa kurulsun mu diye sorar, `e` de. Mac şifreni isteyebilir; şifre yazarken ekranda bir şey görünmez, bu normal.
+   - Sonra Node.js ve ffmpeg kurulur, Claude Code kurulsun mu diye sorar. Bir kez yapılır.
+   - Form tarayıcıda açılır. Terminal penceresini işin bitene kadar açık tut.
+4. Formu doldur, **Edit'i başlat**'a bas. Yeni bir Terminal penceresinde yapay zeka aracı işe başlar.
+
+Sonraki seferlerde de aynı şekilde aç. `baslat.command` dosyasına çift tıklamak da olur, ama Mac internetten inen dosyalarda ilk seferde "açılamıyor" uyarısı verir. O zaman **Sistem Ayarları → Gizlilik ve Güvenlik** bölümünün altındaki **Yine de Aç** düğmesine bas ya da 3. adımdaki Terminal yolunu kullan.
+
+`.bat`, `.ps1` dosyaları sadece Windows içindir, Mac'te kullanılmaz.
+
+Mac'te sorun çıkarsa:
+- **"brew: command not found" ya da kurulum yarıda kaldı:** Terminal'i kapatıp aç, 3. adımı tekrarla. Betik kaldığı yerden devam eder.
+- **Homebrew yönetici şifresi istiyor ama kabul etmiyor:** Mac kullanıcın yönetici (admin) olmalı.
+- **Başlat'a basınca "claude bulunamadı":** Terminal'de `npm install -g @anthropic-ai/claude-code` çalıştır ya da Codex/Gemini kullanıyorsan onu kur, sonra Başlat'a tekrar bas.
+- **Kendi Terminal'inde ffmpeg veya node bulunamıyor:** Başlat düğmesinin açtığı pencerede sorun olmaz. Elle çalıştıracaksan önce `export PATH=/opt/homebrew/bin:/usr/local/bin:$PATH` yaz.
+- **Transkript için Python:** Mac'te `python3` kullanılır. Yapay zeka gerekirse proje içinde `.venv` sanal ortamı açar, sistemine dokunmaz.
 
 ## Her yeni video için
 `baslat.bat`'a çift tıkla, formu doldur, **Edit'i başlat**'a bas. Her video kendi adıyla `materyaller/` altında ayrı bir klasöre yerleşir.
@@ -53,6 +73,7 @@ Sağdaki **Ayarlarım** kartında renk, stil, efekt, ses ve kamera seçimlerini 
 ## İçindekiler
 - `baslat.bat`: tek giriş. Gerekirse kurar, formu açar
 - `baslat-arac.bat`: Başlat düğmesinin yapay zeka aracını açtığı küçük yardımcı
+- `baslat.command`, `baslat-arac.sh`: aynılarının Mac sürümü
 - `kur.bat`: kurulumu elle yeniden yapar
 - `form.html`: brief formu
 - `talimat/video-edit.md`: yapay zekanın izlediği akış (tek kaynak)
