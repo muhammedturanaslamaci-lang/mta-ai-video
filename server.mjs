@@ -22,6 +22,52 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'});
       return res.end(fs.readFileSync(path.join(root, 'form.html')));
     }
+    if (req.method === 'GET' && url.pathname === '/mta-reels') {
+      res.writeHead(200, {'Content-Type':'text/html; charset=utf-8'});
+      return res.end(fs.readFileSync(path.join(root,'mta-reels.html')));
+    }
+    if (req.method === 'POST' && url.pathname === '/api/mta-reels') {
+      const rawName = req.headers['x-mta-file'] || '';
+      let name;
+      try { name = decodeURIComponent(rawName); } catch { return json(res,400,{error:'Dosya adı geçersiz'}); }
+      if (!/\\.(mp4|mov|m4v|webm)$/i.test(name)) return json(res,400,{error:'MP4, MOV veya WebM seç'});
+      const id = 'reels-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,8);
+      const dir = path.join(root,'out','mta-jobs',id);
+      fs.mkdirSync(dir,{recursive:true});
+      const input = path.join(dir,'input'+path.extname(name).toLowerCase());
+      let size = 0;
+      const file = fs.createWriteStream(input,{flags:'wx'});
+      try {
+        for await (const chunk of req) {
+          size += chunk.length;
+          if (size > 1024*1024*1024) throw Error('Dosya 1 GB sınırını aşıyor');
+          if (!file.write(chunk)) await new Promise(ok=>file.once('drain',ok));
+        }
+        await new Promise((ok,fail)=>file.end(err=>err?fail(err):ok()));
+      } catch(e) { file.destroy(); fs.rmSync(dir,{recursive:true,force:true}); return json(res,413,{error:e.message}); }
+      const statusFile=path.join(dir,'status.json');
+      const save=(obj)=>fs.writeFileSync(statusFile,JSON.stringify(obj));
+      save({status:'processing'});
+      const output=path.join(dir,'reels.mp4');
+      const child=spawn(process.execPath,[path.join(root,'scripts','mta-auto-reels.mjs'),input,output],{cwd:root,stdio:['ignore','ignore','pipe']});
+      let errors='';
+      child.stderr.on('data',d=>{errors=(errors+d.toString()).slice(-3000)});
+      child.on('error',e=>save({status:'error',error:e.message}));
+      child.on('close',code=>save(code===0?{status:'done'}:{status:'error',error:errors.slice(-500)||'Montaj başarısız'}));
+      return json(res,202,{ok:true,jobId:id});
+    }
+    const jobMatch=url.pathname.match(/^\\/api\\/mta-job\\/(reels-[a-z0-9-]+)(\\/download)?$/);
+    if (req.method==='GET' && jobMatch) {
+      const dir=path.join(root,'out','mta-jobs',jobMatch[1]);
+      if (!fs.existsSync(path.join(dir,'status.json'))) return json(res,404,{error:'İş bulunamadı'});
+      const state=JSON.parse(fs.readFileSync(path.join(dir,'status.json'),'utf8'));
+      if (!jobMatch[2]) return json(res,200,state);
+      if (state.status!=='done') return json(res,409,{error:'Video henüz hazır değil'});
+      const video=path.join(dir,'reels.mp4');
+      if (!fs.existsSync(video)) return json(res,404,{error:'Çıktı bulunamadı'});
+      res.writeHead(200,{'Content-Type':'video/mp4','Content-Disposition':'attachment; filename="mta-reels.mp4"'});
+      return fs.createReadStream(video).pipe(res);
+    }
     if (req.method === 'GET' && url.pathname === '/api/ping') return json(res, 200, {ok: true, platform: process.platform});
     if (req.method === 'POST' && url.pathname === '/api/save') {
       if (req.headers['x-form'] !== '1') return json(res, 403, {ok: false, error: 'header'});
