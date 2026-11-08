@@ -14,7 +14,17 @@ document.querySelector('#go').onclick=async()=>{
  try{
  const r=await fetch('/api/mta-reels',{method:'POST',headers:{'Content-Type':f.type||'application/octet-stream','X-MTA-File':encodeURIComponent(f.name)},body:f});
  const data=await r.json();if(!r.ok)throw Error(data.error||'İşlem başarısız');
- s.textContent='Montaj başladı. İşlem kodu: '+data.jobId+'. Sonuç için sunucu geliştirmesi gerekiyor.';
+ s.textContent='Montaj yapılıyor…';
+ for(let n=0;n<360;n++){
+  await new Promise(ok=>setTimeout(ok,2000));
+  const q=await fetch('/api/mta-job/'+data.jobId);const state=await q.json();
+  if(state.status==='error')throw Error(state.error||'Montaj başarısız');
+  if(state.status==='done'){
+   s.innerHTML='Video hazır! <a href="/api/mta-job/'+data.jobId+'/download">MP4 indir</a>';
+   return;
+  }
+ }
+ s.textContent='İşlem sürüyor. İş kodu: '+data.jobId;
  }catch(e){s.textContent='Henüz kullanılamıyor: '+e.message}
 };
 </script></html>
