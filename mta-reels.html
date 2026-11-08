@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="tr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MTA AI • Reels Studio</title>
+<style>body{background:#101218;color:#f7f7f8;font:16px system-ui;margin:0;padding:28px}main{max-width:680px;margin:auto}section{background:#1b202b;border:1px solid #333c4d;border-radius:18px;padding:24px;margin:20px 0}h1{font-size:32px}small,p{color:#b8c0d0}button{border:0;border-radius:12px;background:#ffca42;color:#161616;padding:14px 22px;font-weight:750;cursor:pointer}input{display:block;margin:18px 0}code{color:#ffca42}a{color:#ffca42}</style>
+<main><h1>🎬 MTA AI — Reels Studio</h1><p>Instagram Reels ve YouTube Shorts için dikey video montajı.</p>
+<section><h2>Otomatik Reels Oluştur</h2><label>Ham videoyu seç<input id="video" type="file" accept="video/*"></label><p>İlk sürüm: 9:16 dönüşüm ve sessizlik kesme. Altyazı, müzik ve akıllı sahne seçimi henüz bağlı değil.</p><button id="go">Otomatik Reels Oluştur</button><p id="status" role="status"></p></section>
+<section><h2>Benim Tarzım</h2><p>Kişisel stil profili kaydedildi; otomatik uygulama sonraki aşamada bağlanacak.</p></section>
+<p><a href="/">← Ana edit formuna dön</a></p></main>
+<script>
+document.querySelector('#go').onclick=async()=>{
+ const f=document.querySelector('#video').files[0],s=document.querySelector('#status');
+ if(!f){s.textContent='Önce bir video seç.';return}
+ s.textContent='Video yükleniyor…';
+ try{
+ const r=await fetch('/api/mta-reels',{method:'POST',headers:{'Content-Type':f.type||'application/octet-stream','X-MTA-File':encodeURIComponent(f.name)},body:f});
+ const data=await r.json();if(!r.ok)throw Error(data.error||'İşlem başarısız');
+ s.textContent='Montaj başladı. İşlem kodu: '+data.jobId+'. Sonuç için sunucu geliştirmesi gerekiyor.';
+ }catch(e){s.textContent='Henüz kullanılamıyor: '+e.message}
+};
+</script></html>
