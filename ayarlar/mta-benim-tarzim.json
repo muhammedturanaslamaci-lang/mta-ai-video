@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "name": "MTA AI - Benim Tarzım",
+  "mode": "dental-reels",
+  "output": {
+    "aspectRatio": "9:16",
+    "width": 1080,
+    "height": 1920,
+    "maxDurationSeconds": 60
+  },
+  "captions": {
+    "language": "tr",
+    "style": "word-highlight",
+    "fontFamily": "Archivo",
+    "primaryColor": "#FFFFFF",
+    "highlightColor": "#FFC83D",
+    "safeArea": true
+  },
+  "editing": {
+    "removeSilences": true,
+    "removeFillerWords": true,
+    "zoomOnEmphasis": true,
+    "cutPace": "dynamic"
+  },
+  "audio": {
+    "normalizeSpeech": true,
+    "backgroundMusic": "subtle",
+    "soundEffects": "minimal"
+  },
+  "privacy": {
+    "blurPatientFaces": true,
+    "requireHumanReview": true
+  },
+  "notes": "Başlangıç profili. Kullanıcının örnek videoları analiz edildikten sonra renk, font ve kurgu tercihleri güncellenecek."
+}
